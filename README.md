@@ -2,16 +2,16 @@
 
 This package provides an easy way to use the [Langflow API](https://docs.datastax.com/en/langflow/api.html) from within server-side JavaScript applications.
 
-* [Installation](#installation)
-  * [With npm](#with-npm)
-  * [With yarn](#with-yarn)
-  * [With pnpm](#with-pnpm)
-* [Prerequisites](#prerequisites)
-* [Configuration](#configuration)
-* [Usage](#usage)
-  * [Initialization](#initialization)
-  * [Calling a flow](#calling-a-flow)
-  * [Streaming](#streaming)
+- [Installation](#installation)
+  - [With npm](#with-npm)
+  - [With yarn](#with-yarn)
+  - [With pnpm](#with-pnpm)
+- [Prerequisites](#prerequisites)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [Initialization](#initialization)
+  - [Calling a flow](#calling-a-flow)
+  - [Streaming](#streaming)
 
 ## Installation
 

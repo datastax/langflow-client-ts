@@ -7,7 +7,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [
     "langflow",
@@ -16,7 +19,11 @@
   "author": "Phil Nash <phil.nash@datastax.com> (https://datastax.com/devs)",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@eslint/js": "^9.16.0",
     "@types/node": "^22.10.1",
-    "typescript": "^5.7.2"
+    "eslint": "^9.16.0",
+    "prettier": "^3.4.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.16.0"
   }
 }

@@ -1,29 +1,36 @@
 import { LangflowError } from "./error.js";
 import { Flow } from "./flow.js";
-import type { LangflowClientOptions, LangflowRequestOptions } from "./types.js";
+import { FlowResponse } from "./flow_response.js";
+import type {
+  LangflowClientOptions,
+  FlowRequestOptions,
+  LangflowResponse,
+  Tweaks,
+} from "./types.js";
 
 export class LangflowClient {
   baseUrl: string;
-  langflowId?: string;
-  apiKey?: string;
+  langflowId: string;
+  apiKey: string;
 
   constructor(opts: LangflowClientOptions) {
-    this.baseUrl = opts.baseUrl;
+    this.baseUrl = opts.baseUrl ?? "https://api.langflow.astra.datastax.com";
     this.langflowId = opts.langflowId;
-    this.apiKey = opts.apiKey || process.env.LANGFLOW_API_KEY;
+    this.apiKey = opts.apiKey;
   }
 
-  flow(flowId: string): Flow {
-    return new Flow(this, flowId, {});
+  flow(flowId: string, tweaks?: Tweaks): Flow {
+    return new Flow(this, flowId, tweaks);
   }
 
   async request(
     flowId: string,
-    body: LangflowRequestOptions
-  ): Promise<unknown> {
+    body: FlowRequestOptions
+  ): Promise<FlowResponse> {
     const url = `${this.baseUrl}/lf/${this.langflowId}/api/v1/run/${flowId}`;
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
+    headers.set("Accept", "application/json");
     if (this.apiKey) {
       headers.set("Authorization", `Bearer ${this.apiKey}`);
     }
@@ -38,7 +45,7 @@ export class LangflowClient {
         response
       );
     }
-    const result = await response.json();
-    return result;
+    const result = (await response.json()) as LangflowResponse;
+    return new FlowResponse(result);
   }
 }

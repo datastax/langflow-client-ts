@@ -2,15 +2,15 @@
   "name": "@datastax/langflow-client",
   "version": "0.1.0",
   "description": "A JavaScript client for the Langflow API",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "type": "module",
   "scripts": {
     "test": "tsx --test",
     "build": "tsc",
-    "watch": "tsc --watch",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "build:watch": "tsc --watch",
+    "lint": "eslint ./src",
+    "format": "prettier --write ./src",
+    "format:check": "prettier --check ./src"
   },
   "keywords": [
     "langflow",
@@ -22,6 +22,7 @@
     "@eslint/js": "^9.16.0",
     "@types/node": "^22.10.1",
     "eslint": "^9.16.0",
+    "globals": "^15.14.0",
     "prettier": "^3.4.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",

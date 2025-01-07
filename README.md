@@ -13,6 +13,7 @@ This package provides an easy way to use the [Langflow API](https://docs.datasta
   - [Calling a flow](#calling-a-flow)
     - [Flow reponses](#flow-reponses)
   - [\[TODO\] Streaming](#todo-streaming)
+  - [\[TODO\] File upload](#todo-file-upload)
 - [Contributing](#contributing)
 
 ## Installation
@@ -125,6 +126,16 @@ const stream = client.flow(flowId).stream(input);
 ```
 
 The `stream` will be a [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream).
+
+### [TODO] File upload
+
+Chat input components support files as input as well as text. You need to upload your file first, using the file upload function, then provide the file path to the flow.
+
+```js
+const flow = client.flow(flowId)
+const file = await flow.uploadFile(fileContents);
+const response = await flow.tweak("ChatInput-abcd": { files: file.file_path }).run(input);
+```
 
 ## Contributing
 

@@ -1,11 +1,13 @@
+import { InputTypes, OutputTypes } from "./flow_types.js";
+
 export interface LangflowClientOptions {
   baseUrl?: string;
   langflowId: string;
   apiKey: string;
 }
 
-export type FlowInputType = "chat" | "text" | "any";
-export type FlowOutputType = "chat" | "text" | "any" | "debug";
+export type FlowInputType = (typeof InputTypes)[keyof typeof InputTypes];
+export type FlowOutputType = (typeof OutputTypes)[keyof typeof OutputTypes];
 
 export interface FlowRequestOptions {
   input_type: FlowInputType;

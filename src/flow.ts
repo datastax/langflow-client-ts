@@ -11,6 +11,7 @@ import {
   LangflowResponse,
   LangflowUploadResponse,
 } from "./types.js";
+import { LangflowStreamError } from "./errors.js";
 
 import { readFile } from "node:fs/promises";
 import { extname, basename } from "node:path";
@@ -34,7 +35,7 @@ export class Flow {
 
   async run(
     input_value: string,
-    options: Partial<Omit<FlowRequestOptions, "input_value">>
+    options: Partial<Omit<FlowRequestOptions, "input_value">>,
   ) {
     const { input_type = "chat", output_type = "chat", session_id } = options;
     const tweaks = { ...this.tweaks, ...options.tweaks };
@@ -52,7 +53,7 @@ export class Flow {
       `/run/${this.id}`,
       "POST",
       body,
-      headers
+      headers,
     )) as LangflowResponse;
 
     return new FlowResponse(result);
@@ -73,8 +74,38 @@ export class Flow {
       `/files/upload/${this.id}`,
       "POST",
       form,
-      headers
+      headers,
     )) as LangflowUploadResponse;
     return new UploadResponse(response);
+  }
+
+  async stream(
+    input_value: string,
+    options: Partial<Omit<FlowRequestOptions, "input_value">>,
+  ) {
+    const { input_type = "chat", output_type = "chat", session_id } = options;
+    const tweaks = { ...this.tweaks, ...options.tweaks };
+    const response = (await this.client.request(
+      `/run/${this.id}`,
+      "POST",
+      JSON.stringify({
+        input_type,
+        output_type,
+        input_value,
+        tweaks,
+        session_id,
+      }),
+      new Headers(),
+      { stream: "true" },
+    )) as LangflowResponse;
+    const flowResponse = new FlowResponse(response);
+    const streamPath = flowResponse.streamPath();
+    if (!streamPath) {
+      throw new LangflowStreamError(
+        "No stream path found in response",
+        flowResponse,
+      );
+    }
+    return this.client.stream(streamPath);
   }
 }

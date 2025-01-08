@@ -10,3 +10,16 @@ export class LangflowError extends Error {
     return this.cause;
   }
 }
+
+export class LangflowRequestError extends Error {
+  cause: Error;
+
+  constructor(message: string, error: Error) {
+    super(message, { cause: error });
+    this.cause = error;
+  }
+
+  error(): Error {
+    return this.cause;
+  }
+}

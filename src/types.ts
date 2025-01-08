@@ -25,3 +25,8 @@ export interface LangflowResponse {
   session_id: string;
   outputs: Array<{ inputs: object; outputs: Array<object> }>;
 }
+
+export interface LangflowUploadResponse {
+  flowId: string;
+  file_path: string;
+}

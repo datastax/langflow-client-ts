@@ -1,7 +1,9 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert";
 import { LangflowClient } from "../index.js";
+import { LangflowError } from "../error.js";
 import { Flow } from "../flow.js";
+import { createMockFetch } from "./utils.js";
 
 describe("LangflowClient", () => {
   const baseUrl = "https://api.langflow.astra.datastax.com";
@@ -34,6 +36,59 @@ describe("LangflowClient", () => {
       const tweaks = { key: "value" };
       const flow = client.flow(flowId, tweaks);
       assert.deepEqual(flow.tweaks, tweaks);
+    });
+  });
+
+  describe("request", () => {
+    it("makes a request to the baseURL with the full path to the method", async () => {
+      const fetcher = createMockFetch(
+        { session_id: "session-id", outputs: [] },
+        (input, init) => {
+          assert.equal(input, `${baseUrl}/lf/${langflowId}/api/v1/run/flow-id`);
+          assert.equal(init?.method, "POST");
+        }
+      );
+
+      const client = new LangflowClient({
+        baseUrl,
+        langflowId,
+        apiKey,
+        fetch: fetcher,
+      });
+      await client.request("flow-id", {
+        input_type: "chat",
+        output_type: "chat",
+        input_value: "Hello, world!",
+      });
+    });
+
+    it("throws a LangflowError if the response is not ok", async () => {
+      const response = { details: "blah" };
+      const fetcher = createMockFetch(response, () => {}, {
+        ok: false,
+        status: 401,
+        statusText: "Unauthorized",
+      });
+
+      const client = new LangflowClient({
+        baseUrl,
+        langflowId,
+        apiKey,
+        fetch: fetcher,
+      });
+
+      try {
+        await client.request("flow-id", {
+          input_type: "chat",
+          output_type: "chat",
+          input_value: "Hello, world!",
+        });
+        assert.fail("Expected an error to be thrown");
+      } catch (error) {
+        assert.ok(error instanceof LangflowError);
+        assert.equal(error.message, "401 - Unauthorized");
+        assert.deepEqual(await error.response().json(), response);
+      }
     });
   });
 });

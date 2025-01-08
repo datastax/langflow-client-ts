@@ -4,6 +4,7 @@ export interface LangflowClientOptions {
   baseUrl?: string;
   langflowId: string;
   apiKey: string;
+  fetch?: typeof fetch;
 }
 
 export type FlowInputType = (typeof InputTypes)[keyof typeof InputTypes];

@@ -12,11 +12,13 @@ export class LangflowClient {
   baseUrl: string;
   langflowId: string;
   apiKey: string;
+  fetch: typeof fetch;
 
   constructor(opts: LangflowClientOptions) {
     this.baseUrl = opts.baseUrl ?? "https://api.langflow.astra.datastax.com";
     this.langflowId = opts.langflowId;
     this.apiKey = opts.apiKey;
+    this.fetch = opts.fetch ?? fetch;
   }
 
   flow(flowId: string, tweaks?: Tweaks): Flow {
@@ -34,7 +36,7 @@ export class LangflowClient {
     if (this.apiKey) {
       headers.set("Authorization", `Bearer ${this.apiKey}`);
     }
-    const response = await fetch(url, {
+    const response = await this.fetch(url, {
       method: "POST",
       body: JSON.stringify(body),
       headers,

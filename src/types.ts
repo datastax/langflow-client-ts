@@ -19,7 +19,7 @@ export interface FlowRequestOptions {
 
 export type Tweak = Record<string, string | number | null | boolean>;
 
-export type Tweaks = Record<string, Tweak>;
+export type Tweaks = Record<string, Tweak | string>;
 
 export interface LangflowResponse {
   session_id: string;

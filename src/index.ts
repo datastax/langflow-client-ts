@@ -1,12 +1,6 @@
-import { LangflowError } from "./error.js";
+import { LangflowError, LangflowRequestError } from "./errors.js";
 import { Flow } from "./flow.js";
-import { FlowResponse } from "./flow_response.js";
-import type {
-  LangflowClientOptions,
-  FlowRequestOptions,
-  LangflowResponse,
-  Tweaks,
-} from "./types.js";
+import type { LangflowClientOptions, Tweaks } from "./types.js";
 
 export class LangflowClient {
   baseUrl: string;
@@ -26,28 +20,29 @@ export class LangflowClient {
   }
 
   async request(
-    flowId: string,
-    body: FlowRequestOptions
-  ): Promise<FlowResponse> {
-    const url = `${this.baseUrl}/lf/${this.langflowId}/api/v1/run/${flowId}`;
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    headers.set("Accept", "application/json");
+    path: string,
+    method: string,
+    body: string | FormData,
+    headers: Headers
+  ): Promise<unknown> {
+    const url = `${this.baseUrl}/lf/${this.langflowId}/api/v1${path}`;
     if (this.apiKey) {
       headers.set("Authorization", `Bearer ${this.apiKey}`);
     }
-    const response = await this.fetch(url, {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers,
-    });
-    if (!response.ok) {
-      throw new LangflowError(
-        `${response.status} - ${response.statusText}`,
-        response
-      );
+    try {
+      const response = await fetch(url, { method, body, headers });
+      if (!response.ok) {
+        throw new LangflowError(
+          `${response.status} - ${response.statusText}`,
+          response
+        );
+      }
+      return await response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new LangflowRequestError(error.message, error);
+      }
+      throw error;
     }
-    const result = (await response.json()) as LangflowResponse;
-    return new FlowResponse(result);
   }
 }

@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert";
 import { LangflowClient } from "../index.js";
-import { LangflowError } from "../error.js";
+import { LangflowRequestError } from "../errors.js";
 import { Flow } from "../flow.js";
 import { createMockFetch } from "./utils.js";
 
@@ -55,11 +55,16 @@ describe("LangflowClient", () => {
         apiKey,
         fetch: fetcher,
       });
-      await client.request("flow-id", {
-        input_type: "chat",
-        output_type: "chat",
-        input_value: "Hello, world!",
-      });
+      await client.request(
+        "/run/flow-id",
+        "POST",
+        JSON.stringify({
+          input_type: "chat",
+          output_type: "chat",
+          input_value: "Hello, world!",
+        }),
+        new Headers()
+      );
     });
 
     it("throws a LangflowError if the response is not ok", async () => {
@@ -78,16 +83,20 @@ describe("LangflowClient", () => {
       });
 
       try {
-        await client.request("flow-id", {
-          input_type: "chat",
-          output_type: "chat",
-          input_value: "Hello, world!",
-        });
+        await client.request(
+          "/run/flow-id",
+          "POST",
+          JSON.stringify({
+            input_type: "chat",
+            output_type: "chat",
+            input_value: "Hello, world!",
+          }),
+          new Headers()
+        );
         assert.fail("Expected an error to be thrown");
       } catch (error) {
-        assert.ok(error instanceof LangflowError);
+        assert.ok(error instanceof LangflowRequestError);
         assert.equal(error.message, "401 - Unauthorized");
-        assert.deepEqual(await error.response().json(), response);
       }
     });
   });

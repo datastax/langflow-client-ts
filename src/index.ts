@@ -30,7 +30,7 @@ export class LangflowClient {
       headers.set("Authorization", `Bearer ${this.apiKey}`);
     }
     try {
-      const response = await fetch(url, { method, body, headers });
+      const response = await this.fetch(url, { method, body, headers });
       if (!response.ok) {
         throw new LangflowError(
           `${response.status} - ${response.statusText}`,

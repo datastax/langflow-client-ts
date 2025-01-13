@@ -77,6 +77,34 @@ describe("LangflowClient", () => {
           apiKey,
           fetch: fetcher,
         });
+        const response = await client.request(
+          "/run/flow-id",
+          "POST",
+          JSON.stringify({
+            input_type: "chat",
+            output_type: "chat",
+            input_value: "Hello, world!",
+          }),
+          new Headers()
+        );
+        assert.deepEqual(response, { session_id: "session-id", outputs: [] });
+      });
+
+      it("includes the API key in the Authorization header", async () => {
+        const fetcher = createMockFetch(
+          { session_id: "session-id", outputs: [] },
+          (input, init) => {
+            const headers = new Headers(init?.headers);
+            assert.equal(headers.get("Authorization"), `Bearer ${apiKey}`);
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          langflowId,
+          apiKey,
+          fetch: fetcher,
+        });
         await client.request(
           "/run/flow-id",
           "POST",
@@ -126,6 +154,7 @@ describe("LangflowClient", () => {
 
   describe("with a custom API URL", () => {
     const baseUrl = "http://localhost:1234";
+    const apiKey = "my-api-key";
 
     it("is initialized successfully with a custom URL", () => {
       const client = new LangflowClient({ baseUrl });
@@ -142,6 +171,91 @@ describe("LangflowClient", () => {
       assert.throws(() => {
         new LangflowClient({ baseUrl, langflowId });
       }, TypeError);
+    });
+
+    describe("request", () => {
+      it("makes a request to the baseURL with the full path to the method", async () => {
+        const fetcher = createMockFetch(
+          { session_id: "session-id", outputs: [] },
+          (input, init) => {
+            assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
+            assert.equal(init?.method, "POST");
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          fetch: fetcher,
+        });
+        const response = await client.request(
+          "/run/flow-id",
+          "POST",
+          JSON.stringify({
+            input_type: "chat",
+            output_type: "chat",
+            input_value: "Hello, world!",
+          }),
+          new Headers()
+        );
+        assert.deepEqual(response, { session_id: "session-id", outputs: [] });
+      });
+
+      it("includes the API key in the Authorization header", async () => {
+        const fetcher = createMockFetch(
+          { session_id: "session-id", outputs: [] },
+          (input, init) => {
+            const headers = new Headers(init?.headers);
+            assert.equal(headers.get("x-api-key"), apiKey);
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          apiKey,
+          fetch: fetcher,
+        });
+        await client.request(
+          "/run/flow-id",
+          "POST",
+          JSON.stringify({
+            input_type: "chat",
+            output_type: "chat",
+            input_value: "Hello, world!",
+          }),
+          new Headers()
+        );
+      });
+
+      it("throws a LangflowError if the response is not ok", async () => {
+        const response = { details: "blah" };
+        const fetcher = createMockFetch(response, () => {}, {
+          ok: false,
+          status: 401,
+          statusText: "Unauthorized",
+        });
+
+        const client = new LangflowClient({
+          baseUrl,
+          fetch: fetcher,
+        });
+
+        try {
+          await client.request(
+            "/run/flow-id",
+            "POST",
+            JSON.stringify({
+              input_type: "chat",
+              output_type: "chat",
+              input_value: "Hello, world!",
+            }),
+            new Headers()
+          );
+          assert.fail("Expected an error to be thrown");
+        } catch (error) {
+          assert.ok(error instanceof LangflowRequestError);
+          assert.equal(error.message, "401 - Unauthorized");
+        }
+      });
     });
   });
 });

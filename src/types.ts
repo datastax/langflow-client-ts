@@ -2,8 +2,8 @@ import { InputTypes, OutputTypes } from "./flow_types.js";
 
 export interface LangflowClientOptions {
   baseUrl?: string;
-  langflowId: string;
-  apiKey: string;
+  langflowId?: string;
+  apiKey?: string;
   fetch?: typeof fetch;
 }
 

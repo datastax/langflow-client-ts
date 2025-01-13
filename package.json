@@ -5,7 +5,8 @@
   "main": "dist/src/index.js",
   "type": "module",
   "scripts": {
-    "test": "c8 -r html -r text tsx --test",
+    "test": "tsx --test",
+    "test:coverage": "c8 -r html -r text npm test",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "lint": "eslint ./src",

@@ -1,4 +1,5 @@
 import mime from "mime";
+import { FormData } from "undici";
 
 import { LangflowClient } from "./index.js";
 import { FlowResponse } from "./flow_response.js";
@@ -12,7 +13,7 @@ import {
 } from "./types.js";
 
 import { readFile } from "node:fs/promises";
-import { extname } from "node:path";
+import { extname, basename } from "node:path";
 
 export class Flow {
   client: LangflowClient;
@@ -59,13 +60,13 @@ export class Flow {
 
   async uploadFile(path: string) {
     const data = await readFile(path);
-    const type = extname(path);
-    const blob = new Blob([data], { type });
+    const type = mime.getType(extname(path));
+    const file = new File([data], basename(path), type ? { type } : {});
+
     const form = new FormData();
-    form.append("file", blob, path);
+    form.append("file", file);
 
     const headers = new Headers();
-    headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
 
     const response = (await this.client.request(

@@ -1,3 +1,5 @@
+import { fetch } from "undici";
+
 import { InputTypes, OutputTypes } from "./flow_types.js";
 
 export interface LangflowClientOptions {
@@ -5,6 +7,7 @@ export interface LangflowClientOptions {
   langflowId?: string;
   apiKey?: string;
   fetch?: typeof fetch;
+  defaultHeaders?: Headers;
 }
 
 export type FlowInputType = (typeof InputTypes)[keyof typeof InputTypes];

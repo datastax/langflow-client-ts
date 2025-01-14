@@ -1,10 +1,13 @@
-import { describe, it } from "node:test";
-import * as assert from "node:assert";
+import { Headers } from "undici";
+
 import { LangflowClient } from "../index.js";
-import { LangflowRequestError } from "../errors.js";
+import { LangflowRequestError, LangflowError } from "../errors.js";
 import { Flow } from "../flow.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "../consts.js";
 import { createMockFetch } from "./utils.js";
+
+import { describe, it } from "node:test";
+import * as assert from "node:assert";
 
 describe("LangflowClient", () => {
   describe("with a DataStax API URL", () => {
@@ -117,6 +120,39 @@ describe("LangflowClient", () => {
         );
       });
 
+      it("includes a user agent in the headers", async () => {
+        const fetcher = createMockFetch(
+          { session_id: "session-id", outputs: [] },
+          (input, init) => {
+            const headers = new Headers(init?.headers);
+            const userAgent = headers.get("User-Agent");
+            console.log(`User-Agent: ${userAgent}`);
+            assert.ok(userAgent);
+            assert.match(
+              userAgent,
+              /^@datastax\/langflow-client\/\d+\.\d+\.\d+/
+            );
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          langflowId,
+          apiKey,
+          fetch: fetcher,
+        });
+        await client.request(
+          "/run/flow-id",
+          "POST",
+          JSON.stringify({
+            input_type: "chat",
+            output_type: "chat",
+            input_value: "Hello, world!",
+          }),
+          new Headers()
+        );
+      });
+
       it("throws a LangflowError if the response is not ok", async () => {
         const response = { details: "blah" };
         const fetcher = createMockFetch(response, () => {}, {
@@ -145,8 +181,40 @@ describe("LangflowClient", () => {
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {
-          assert.ok(error instanceof LangflowRequestError);
+          assert.ok(error instanceof LangflowError);
           assert.equal(error.message, "401 - Unauthorized");
+        }
+      });
+
+      it("throws a LangflowRequestError if the request fails", async () => {
+        const fetcher = createMockFetch({ details: "blah" }, () => {}, {
+          ok: false,
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+
+        const client = new LangflowClient({
+          baseUrl,
+          langflowId,
+          apiKey,
+          fetch: fetcher,
+        });
+
+        try {
+          await client.request(
+            "/run/flow-id",
+            "POST",
+            JSON.stringify({
+              input_type: "chat",
+              output_type: "chat",
+              input_value: "Hello, world!",
+            }),
+            new Headers()
+          );
+          assert.fail("Expected an error to be thrown");
+        } catch (error) {
+          assert.ok(error instanceof LangflowRequestError);
+          assert.equal(error.message, "Internal Server Error");
         }
       });
     });
@@ -252,7 +320,7 @@ describe("LangflowClient", () => {
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {
-          assert.ok(error instanceof LangflowRequestError);
+          assert.ok(error instanceof LangflowError);
           assert.equal(error.message, "401 - Unauthorized");
         }
       });

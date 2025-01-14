@@ -1,7 +1,12 @@
+import { fetch, FormData } from "undici";
+
+import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
 import { Flow } from "./flow.js";
 import type { LangflowClientOptions, Tweaks } from "./types.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "./consts.js";
+
+import { platform, arch } from "os";
 
 export class LangflowClient {
   baseUrl: string;
@@ -9,6 +14,7 @@ export class LangflowClient {
   langflowId?: string;
   apiKey?: string;
   fetch: typeof fetch;
+  defaultHeaders: Headers;
 
   constructor(opts: LangflowClientOptions) {
     this.baseUrl = opts.baseUrl ?? DATASTAX_LANGFLOW_BASE_URL;
@@ -16,6 +22,10 @@ export class LangflowClient {
     this.langflowId = opts.langflowId;
     this.apiKey = opts.apiKey;
     this.fetch = opts.fetch ?? fetch;
+    this.defaultHeaders = opts.defaultHeaders ?? new Headers();
+    if (!this.defaultHeaders.has("User-Agent")) {
+      this.defaultHeaders.set("User-Agent", this.#getUserAgent());
+    }
 
     if (this.#isDataStax()) {
       const errors: string[] = [];
@@ -39,6 +49,10 @@ export class LangflowClient {
     return this.baseUrl === DATASTAX_LANGFLOW_BASE_URL;
   }
 
+  #getUserAgent(): string {
+    return `@datastax/langflow-client/${pkg.version} (${platform()} ${arch()}) node/${process.version}`;
+  }
+
   flow(flowId: string, tweaks?: Tweaks): Flow {
     return new Flow(this, flowId, tweaks);
   }
@@ -50,6 +64,11 @@ export class LangflowClient {
     headers: Headers
   ): Promise<unknown> {
     const url = `${this.baseUrl}${this.basePath}${path}`;
+    for (const [header, value] of this.defaultHeaders.entries()) {
+      if (!headers.has(header)) {
+        headers.set(header, value);
+      }
+    }
     if (this.apiKey) {
       if (this.#isDataStax()) {
         headers.set("Authorization", `Bearer ${this.apiKey}`);
@@ -67,6 +86,9 @@ export class LangflowClient {
       }
       return await response.json();
     } catch (error) {
+      if (error instanceof LangflowError) {
+        throw error;
+      }
       if (error instanceof Error) {
         throw new LangflowRequestError(error.message, error);
       }

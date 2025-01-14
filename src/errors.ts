@@ -1,3 +1,5 @@
+import { type Response } from "undici";
+
 export class LangflowError extends Error {
   cause: Response;
 

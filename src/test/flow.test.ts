@@ -47,7 +47,7 @@ describe("Flow", () => {
         (input, init) => {
           assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
           assert.equal(init?.method, "POST");
-        }
+        },
       );
       const client = new LangflowClient({
         baseUrl: "http://localhost:7860",
@@ -67,13 +67,13 @@ describe("Flow", () => {
   describe("uploadFile", () => {
     it("reads the file and sends it to the server", async () => {
       const fetcher = createMockFetch(
-        { session_id: "session-id", outputs: [] },
+        { flowId, file_path: "folder/date-filename.jpg" },
         (input, init) => {
           assert.equal(input, `${baseUrl}/api/v1/files/upload/${flowId}`);
           assert.equal(init?.method, "POST");
           assert.ok(init?.body instanceof FormData);
           assert.ok(init?.body.has("file"));
-        }
+        },
       );
       const client = new LangflowClient({
         baseUrl: "http://localhost:7860",
@@ -82,9 +82,10 @@ describe("Flow", () => {
       const flow = new Flow(client, flowId);
 
       const result = await flow.uploadFile(
-        join(import.meta.dirname, "fixtures", "bodi.jpg")
+        join(import.meta.dirname, "fixtures", "bodi.jpg"),
       );
       assert.ok(result instanceof UploadResponse);
+      assert.equal(result.flowId, flowId);
     });
   });
 });

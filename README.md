@@ -8,12 +8,14 @@ This package provides an easy way to use the [Langflow API](https://docs.datasta
   - [With pnpm](#with-pnpm)
 - [Prerequisites](#prerequisites)
 - [Configuration](#configuration)
+  - [DataStax Langflow](#datastax-langflow)
+  - [Open-source Langflow](#open-source-langflow)
 - [Usage](#usage)
   - [Initialization](#initialization)
   - [Calling a flow](#calling-a-flow)
     - [Flow reponses](#flow-reponses)
   - [\[TODO\] Streaming](#todo-streaming)
-  - [\[TODO\] File upload](#todo-file-upload)
+  - [File upload](#file-upload)
 - [Contributing](#contributing)
 
 ## Installation
@@ -40,9 +42,19 @@ pnpm add @datastax/langflow-client
 
 To use this Langflow client you will need a DataStax account with which you can use [DataStax Langflow](https://docs.datastax.com/en/langflow/index.html). You will need a flow before you can call its API. If you don't already have one, you can get started with the [Basic Prompting Flow](https://docs.datastax.com/en/langflow/quickstart.html).
 
+You can also use this with an installation of [open-source Langflow](https://www.langflow.org/).
+
 ## Configuration
 
-You will need a [Langflow API key](https://docs.datastax.com/en/langflow/concepts/settings.html#langflow-api). You provide the API key when you create a new client.
+### DataStax Langflow
+
+You will need a [Langflow API key](https://docs.datastax.com/en/langflow/concepts/settings.html#langflow-api). You provide the API key when you create a new client. You will also need your Langflow ID.
+
+You can generate API keys and find your Langflow ID on the API modal in the Langflow flow editor.
+
+### Open-source Langflow
+
+You will need an installation of Langflow. You may also require an [API key](https://docs.langflow.org/configuration-api-keys) if you have set up [authentication on Langflow](https://docs.langflow.org/configuration-authentication).
 
 ## Usage
 
@@ -56,17 +68,23 @@ import { LangflowClient } from "@datastax/langflow-client";
 
 You can then create a new client object with the following options:
 
-- `langflowId`: The ID of your organisation, which can be found in the URL while you are logged into DataStax Langflow
-- `apiKey`: A Langflow API key that can be generated within your DataStax account
-- `baseURL`: This is `https://api.langflow.astra.datastax.com` and it is set by default, so it is optional
+- `baseURL`: This is set to `https://api.langflow.astra.datastax.com` by default, if you are running your own instance of Langflow you will need to provide the URL
+- `langflowId`: The ID of your organisation, which can be found in the API modal of the flow editor. This is not required for your own instance of Langflow
+- `apiKey`: A Langflow API key that can be generated within your DataStax account or in the settings of open-source Langflow
 
 ```js
-const client = new LangflowClient({ baseUrl, langflowId, apiKey });
+// using DataStax Langflow, you do not need to provide the baseUrl
+const dsLangflowClient = new LangflowClient({ langflowId, apiKey });
+
+// for open-source langflow, you will need to provide a baseUrl and optionally an apiKey
+const baseUrl = "http://localhost:7860";
+const apiKey = "sk-...";
+const osLangflowClient = new LangflowClient({ baseUrl, apiKey });
 ```
 
 ### Calling a flow
 
-Once you have a client, you can create a reference to a flow using the `flowID`. This can be found in the API modal in DataStax Langflow.
+Once you have a client, you can create a reference to a flow using the `flowID`. This can be found in the API modal in Langflow.
 
 ```js
 const flow = client.flow(flowId);
@@ -127,15 +145,20 @@ const stream = client.flow(flowId).stream(input);
 
 The `stream` will be a [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream).
 
-### [TODO] File upload
+### File upload
 
 Chat input components support files as input as well as text. You need to upload your file first, using the file upload function, then provide the file path to the flow.
 
 ```js
 const flow = client.flow(flowId)
-const file = await flow.uploadFile(fileContents);
-const response = await flow.tweak("ChatInput-abcd": { files: file.file_path }).run(input);
+
+const file = await flow.uploadFile(pathToFile);
+
+const response = await flow.tweak("ChatInput-abcd": { files: file.filePath }).run("What can you see in this image?");
 ```
+
+> [!WARNING]  
+> DataStax Langflow doesn't make file upload available, you will receive a 501 Not Implemented error.
 
 ## Contributing
 

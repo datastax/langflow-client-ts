@@ -1,5 +1,7 @@
 import { type Response } from "undici";
 
+import { FlowResponse } from "./flow_response.js";
+
 export class LangflowError extends Error {
   cause: Response;
 
@@ -22,6 +24,19 @@ export class LangflowRequestError extends Error {
   }
 
   error(): Error {
+    return this.cause;
+  }
+}
+
+export class LangflowStreamError extends Error {
+  cause: FlowResponse;
+
+  constructor(message: string, response: FlowResponse) {
+    super(message, { cause: response });
+    this.cause = response;
+  }
+
+  response(): FlowResponse {
     return this.cause;
   }
 }

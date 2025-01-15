@@ -1,4 +1,5 @@
 import { fetch, FormData } from "undici";
+import { EventSourceParserStream } from "eventsource-parser/stream";
 
 import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
@@ -53,6 +54,14 @@ export class LangflowClient {
     return `@datastax/langflow-client/${pkg.version} (${platform()} ${arch()}) node/${process.version}`;
   }
 
+  #setApiKey(apiKey: string, headers: Headers) {
+    if (this.#isDataStax()) {
+      headers.set("Authorization", `Bearer ${apiKey}`);
+    } else {
+      headers.set("x-api-key", apiKey);
+    }
+  }
+
   flow(flowId: string, tweaks?: Tweaks): Flow {
     return new Flow(this, flowId, tweaks);
   }
@@ -61,30 +70,61 @@ export class LangflowClient {
     path: string,
     method: string,
     body: string | FormData,
-    headers: Headers
+    headers: Headers,
+    query?: Record<string, string>,
   ): Promise<unknown> {
-    const url = `${this.baseUrl}${this.basePath}${path}`;
+    const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
     for (const [header, value] of this.defaultHeaders.entries()) {
       if (!headers.has(header)) {
         headers.set(header, value);
       }
     }
+    if (query) {
+      Object.entries(query).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+    }
     if (this.apiKey) {
-      if (this.#isDataStax()) {
-        headers.set("Authorization", `Bearer ${this.apiKey}`);
-      } else {
-        headers.set("x-api-key", this.apiKey);
-      }
+      this.#setApiKey(this.apiKey, headers);
     }
     try {
       const response = await this.fetch(url, { method, body, headers });
       if (!response.ok) {
         throw new LangflowError(
           `${response.status} - ${response.statusText}`,
-          response
+          response,
         );
       }
       return await response.json();
+    } catch (error) {
+      if (error instanceof LangflowError) {
+        throw error;
+      }
+      if (error instanceof Error) {
+        throw new LangflowRequestError(error.message, error);
+      }
+      throw error;
+    }
+  }
+
+  async stream(path: string) {
+    const url = new URL(`${this.baseUrl}${path}`);
+    const headers = new Headers();
+    headers.set("Accept", "text/event-stream");
+    if (this.apiKey) {
+      this.#setApiKey(this.apiKey, headers);
+    }
+    try {
+      const response = await fetch(url, { method: "GET", headers });
+      if (!response.ok || response.body === null) {
+        throw new LangflowError(
+          `${response.status} - ${response.statusText}`,
+          response,
+        );
+      }
+      const decoderStream = new TextDecoderStream("utf-8");
+      const parserStream = new EventSourceParserStream();
+      return response.body.pipeThrough(decoderStream).pipeThrough(parserStream);
     } catch (error) {
       if (error instanceof LangflowError) {
         throw error;

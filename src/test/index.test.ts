@@ -68,10 +68,10 @@ describe("LangflowClient", () => {
           (input, init) => {
             assert.equal(
               input,
-              `${baseUrl}/lf/${langflowId}/api/v1/run/flow-id`
+              `${baseUrl}/lf/${langflowId}/api/v1/run/flow-id`,
             );
             assert.equal(init?.method, "POST");
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -88,7 +88,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
         assert.deepEqual(response, { session_id: "session-id", outputs: [] });
       });
@@ -99,7 +99,7 @@ describe("LangflowClient", () => {
           (input, init) => {
             const headers = new Headers(init?.headers);
             assert.equal(headers.get("Authorization"), `Bearer ${apiKey}`);
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -116,7 +116,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
       });
 
@@ -126,13 +126,12 @@ describe("LangflowClient", () => {
           (input, init) => {
             const headers = new Headers(init?.headers);
             const userAgent = headers.get("User-Agent");
-            console.log(`User-Agent: ${userAgent}`);
             assert.ok(userAgent);
             assert.match(
               userAgent,
-              /^@datastax\/langflow-client\/\d+\.\d+\.\d+/
+              /^@datastax\/langflow-client\/\d+\.\d+\.\d+/,
             );
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -149,7 +148,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
       });
 
@@ -177,7 +176,7 @@ describe("LangflowClient", () => {
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
+            new Headers(),
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {
@@ -209,7 +208,7 @@ describe("LangflowClient", () => {
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
+            new Headers(),
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {
@@ -248,7 +247,7 @@ describe("LangflowClient", () => {
           (input, init) => {
             assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
             assert.equal(init?.method, "POST");
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -263,7 +262,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
         assert.deepEqual(response, { session_id: "session-id", outputs: [] });
       });
@@ -274,7 +273,7 @@ describe("LangflowClient", () => {
           (input, init) => {
             const headers = new Headers(init?.headers);
             assert.equal(headers.get("x-api-key"), apiKey);
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -290,7 +289,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
       });
 
@@ -316,7 +315,7 @@ describe("LangflowClient", () => {
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
+            new Headers(),
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {

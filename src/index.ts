@@ -108,14 +108,14 @@ export class LangflowClient {
   }
 
   async stream(path: string) {
-    const url = new URL(`${this.baseUrl}/lf/${this.langflowId}${path}`);
+    const url = new URL(`${this.baseUrl}${path}`);
     const headers = new Headers();
     headers.set("Accept", "text/event-stream");
     if (this.apiKey) {
       this.#setApiKey(this.apiKey, headers);
     }
     try {
-      const response = await fetch(url, { headers });
+      const response = await fetch(url, { method: "GET", headers });
       if (!response.ok || response.body === null) {
         throw new LangflowError(
           `${response.status} - ${response.statusText}`,

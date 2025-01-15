@@ -10,6 +10,7 @@ import {
   FlowRequestOptions,
   LangflowResponse,
   LangflowUploadResponse,
+  StreamEvent,
 } from "./types.js";
 import { LangflowStreamError } from "./errors.js";
 
@@ -82,9 +83,14 @@ export class Flow {
   async stream(
     input_value: string,
     options: Partial<Omit<FlowRequestOptions, "input_value">>,
-  ) {
+  ): Promise<ReadableStream<StreamEvent>> {
     const { input_type = "chat", output_type = "chat", session_id } = options;
     const tweaks = { ...this.tweaks, ...options.tweaks };
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    headers.set("Accept", "application/json");
+
     const response = (await this.client.request(
       `/run/${this.id}`,
       "POST",
@@ -95,7 +101,7 @@ export class Flow {
         tweaks,
         session_id,
       }),
-      new Headers(),
+      headers,
       { stream: "true" },
     )) as LangflowResponse;
     const flowResponse = new FlowResponse(response);
@@ -106,6 +112,13 @@ export class Flow {
         flowResponse,
       );
     }
-    return this.client.stream(streamPath);
+    const stream = await this.client.stream(streamPath);
+    return stream.pipeThrough(
+      new TransformStream({
+        async transform(chunk, controller) {
+          controller.enqueue(JSON.parse(chunk.data) as StreamEvent);
+        },
+      }),
+    );
   }
 }

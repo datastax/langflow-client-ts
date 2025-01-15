@@ -34,3 +34,8 @@ export interface LangflowUploadResponse {
   flowId: string;
   file_path: string;
 }
+
+export type StreamEvent =
+  | { data: string }
+  | { message: string }
+  | { error: string };

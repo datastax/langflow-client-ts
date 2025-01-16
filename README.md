@@ -14,7 +14,6 @@ This package provides an easy way to use the [Langflow API](https://docs.datasta
   - [Initialization](#initialization)
   - [Calling a flow](#calling-a-flow)
     - [Flow reponses](#flow-reponses)
-  - [\[TODO\] Streaming](#todo-streaming)
   - [File upload](#file-upload)
 - [Contributing](#contributing)
 
@@ -134,16 +133,6 @@ There is one convenience function that will return you the first chat output mes
 const response = client.flow(flowId).run(input);
 console.log(response.chatOutputText());
 ```
-
-### [TODO] Streaming
-
-If your components support it, you can stream the results of a flow like so:
-
-```js
-const stream = client.flow(flowId).stream(input);
-```
-
-The `stream` will be a [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream).
 
 ### File upload
 

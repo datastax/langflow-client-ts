@@ -23,31 +23,9 @@ export class FlowResponse {
     for (const outputs of this.outputs) {
       if (Array.isArray(outputs.outputs)) {
         const chatOutput = outputs.outputs.find(
-          (output) => !!output?.outputs?.message
+          (output) => !!output?.outputs?.message,
         );
         return chatOutput?.outputs?.message.message.text;
-      }
-    }
-    return undefined;
-  }
-
-  /**
-   * Retrieves the first stream path from the outputs.
-   *
-   * This is useful when you have one chat output from a flow that will return
-   * a stream response. It is a shortcut to return the stream path from the
-   * first chat output's artifacts. If no stream path is found, it returns
-   * undefined.
-   *
-   * @returns {string | undefined} The stream path if available, otherwise undefined.
-   */
-  streamPath(): string | undefined {
-    for (const outputs of this.outputs) {
-      if (Array.isArray(outputs.outputs)) {
-        const chatOutput = outputs.outputs.find(
-          (output) => !!output?.artifacts?.stream_url
-        );
-        return chatOutput?.artifacts?.stream_url;
       }
     }
     return undefined;

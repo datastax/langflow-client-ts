@@ -1,5 +1,4 @@
 import { fetch, FormData } from "undici";
-import { EventSourceParserStream } from "eventsource-parser/stream";
 
 import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
@@ -96,35 +95,6 @@ export class LangflowClient {
         );
       }
       return await response.json();
-    } catch (error) {
-      if (error instanceof LangflowError) {
-        throw error;
-      }
-      if (error instanceof Error) {
-        throw new LangflowRequestError(error.message, error);
-      }
-      throw error;
-    }
-  }
-
-  async stream(path: string) {
-    const url = new URL(`${this.baseUrl}${path}`);
-    const headers = new Headers();
-    headers.set("Accept", "text/event-stream");
-    if (this.apiKey) {
-      this.#setApiKey(this.apiKey, headers);
-    }
-    try {
-      const response = await fetch(url, { method: "GET", headers });
-      if (!response.ok || response.body === null) {
-        throw new LangflowError(
-          `${response.status} - ${response.statusText}`,
-          response,
-        );
-      }
-      const decoderStream = new TextDecoderStream("utf-8");
-      const parserStream = new EventSourceParserStream();
-      return response.body.pipeThrough(decoderStream).pipeThrough(parserStream);
     } catch (error) {
       if (error instanceof LangflowError) {
         throw error;

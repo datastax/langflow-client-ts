@@ -89,13 +89,13 @@ Once you have a client, you can create a reference to a flow using the `flowID`.
 const flow = client.flow(flowId);
 ```
 
-You can run a flow by calling `run` with the input to the flow:
+You can run a flow by calling `run` with the text input to the flow:
 
 ```js
 const response = await client.flow(flowId).run(input);
 ```
 
-You can add tweaks to a flow like so:
+You can add [tweaks](https://docs.langflow.org/concepts-api#tweaks) to a flow like so:
 
 ```js
 const response = await client
@@ -110,13 +110,20 @@ Or you can pass all tweaks as an object:
 const response = await client.flow(flowId).run(input, { tweaks });
 ```
 
-You can also pass input and output options, as well as a session ID:
+You can also pass input and output options, as well as a session ID.
 
 ```js
-const response = await client
-  .flow(flowId)
-  .run(input, { tweaks, input_type, output_type, session_id });
+import { InputTypes, OutputTypes } from "@datastax/langflow-client/consts";
+
+const response = await client.flow(flowId).run(input, {
+  input_type: InputTypes.CHAT,
+  output_type: OutputTypes.CHAT,
+  session_id,
+  tweaks,
+});
 ```
+
+The available input types are "chat", "text" and "any". The available output types are "chat", "text", "any" and "debug". The default for both is "chat".
 
 #### Flow reponses
 
@@ -136,12 +143,14 @@ console.log(response.chatOutputText());
 
 ### File upload
 
-Chat input components support files as input as well as text. You need to upload your file first, using the file upload function, then provide the file path to the flow.
+Chat input components support files as input as well as text. You need to upload your file first, using the file upload function, then provide the file path to the flow as a tweak.
 
 ```js
 const flow = client.flow(flowId)
 
 const file = await flow.uploadFile(pathToFile);
+console.log(file);
+// => { flowId: "XXX", filePath: "YYY" }
 
 const response = await flow.tweak("ChatInput-abcd": { files: file.filePath }).run("What can you see in this image?");
 ```

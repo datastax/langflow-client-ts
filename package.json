@@ -2,12 +2,40 @@
   "name": "@datastax/langflow-client",
   "version": "0.1.0",
   "description": "A JavaScript client for the Langflow API",
-  "main": "dist/src/index.js",
   "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./consts": {
+      "import": "./dist/consts.js",
+      "default": "./dist/consts.js"
+    },
+    "./errors": {
+      "import": "./dist/errors.js",
+      "default": "./dist/errors.js"
+    },
+    "./flow": {
+      "import": "./dist/flow.js",
+      "default": "./dist/flow.js"
+    },
+    "./flow_response": {
+      "import": "./dist/flow_response.js",
+      "default": "./dist/flow_response.js"
+    },
+    "./upload_response": {
+      "import": "./dist/upload_response.js",
+      "default": "./dist/upload_response.js"
+    }
+  },
   "scripts": {
     "test": "tsx --test ./src/test/**/*.test.ts",
     "test:coverage": "c8 -r html -r text npm test",
-    "build": "tsc",
+    "build": "npm run build:clean && tsc",
+    "build:clean": "rm -rf dist",
+    "build:check": "tsc --noEmit",
     "build:watch": "tsc --watch",
     "lint": "eslint ./src",
     "format": "prettier --write ./src",

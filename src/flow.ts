@@ -1,3 +1,17 @@
+// Copyright DataStax, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import mime from "mime";
 import { FormData } from "undici";
 
@@ -34,7 +48,7 @@ export class Flow {
 
   async run(
     input_value: string,
-    options: Partial<Omit<FlowRequestOptions, "input_value">>
+    options: Partial<Omit<FlowRequestOptions, "input_value">>,
   ) {
     const { input_type = "chat", output_type = "chat", session_id } = options;
     const tweaks = { ...this.tweaks, ...options.tweaks };
@@ -52,7 +66,7 @@ export class Flow {
       `/run/${this.id}`,
       "POST",
       body,
-      headers
+      headers,
     )) as LangflowResponse;
 
     return new FlowResponse(result);
@@ -73,7 +87,7 @@ export class Flow {
       `/files/upload/${this.id}`,
       "POST",
       form,
-      headers
+      headers,
     )) as LangflowUploadResponse;
     return new UploadResponse(response);
   }

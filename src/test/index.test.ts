@@ -1,3 +1,17 @@
+// Copyright DataStax, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import { Headers } from "undici";
 
 import { LangflowClient } from "../index.js";
@@ -68,10 +82,10 @@ describe("LangflowClient", () => {
           (input, init) => {
             assert.equal(
               input,
-              `${baseUrl}/lf/${langflowId}/api/v1/run/flow-id`
+              `${baseUrl}/lf/${langflowId}/api/v1/run/flow-id`,
             );
             assert.equal(init?.method, "POST");
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -88,7 +102,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
         assert.deepEqual(response, { session_id: "session-id", outputs: [] });
       });
@@ -99,7 +113,7 @@ describe("LangflowClient", () => {
           (input, init) => {
             const headers = new Headers(init?.headers);
             assert.equal(headers.get("Authorization"), `Bearer ${apiKey}`);
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -116,7 +130,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
       });
 
@@ -129,9 +143,9 @@ describe("LangflowClient", () => {
             assert.ok(userAgent);
             assert.match(
               userAgent,
-              /^@datastax\/langflow-client\/\d+\.\d+\.\d+/
+              /^@datastax\/langflow-client\/\d+\.\d+\.\d+/,
             );
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -148,7 +162,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
       });
 
@@ -176,7 +190,7 @@ describe("LangflowClient", () => {
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
+            new Headers(),
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {
@@ -208,7 +222,7 @@ describe("LangflowClient", () => {
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
+            new Headers(),
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {
@@ -247,7 +261,7 @@ describe("LangflowClient", () => {
           (input, init) => {
             assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
             assert.equal(init?.method, "POST");
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -262,7 +276,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
         assert.deepEqual(response, { session_id: "session-id", outputs: [] });
       });
@@ -273,7 +287,7 @@ describe("LangflowClient", () => {
           (input, init) => {
             const headers = new Headers(init?.headers);
             assert.equal(headers.get("x-api-key"), apiKey);
-          }
+          },
         );
 
         const client = new LangflowClient({
@@ -289,7 +303,7 @@ describe("LangflowClient", () => {
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
+          new Headers(),
         );
       });
 
@@ -315,7 +329,7 @@ describe("LangflowClient", () => {
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
+            new Headers(),
           );
           assert.fail("Expected an error to be thrown");
         } catch (error) {

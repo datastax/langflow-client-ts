@@ -70,7 +70,7 @@ export class LangflowClient {
     method: string,
     body: string | FormData,
     headers: Headers,
-    query?: Record<string, string>,
+    query?: Record<string, string>
   ): Promise<unknown> {
     const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
     for (const [header, value] of this.defaultHeaders.entries()) {
@@ -91,7 +91,7 @@ export class LangflowClient {
       if (!response.ok) {
         throw new LangflowError(
           `${response.status} - ${response.statusText}`,
-          response,
+          response
         );
       }
       return await response.json();

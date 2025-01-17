@@ -23,7 +23,7 @@ export class FlowResponse {
     for (const outputs of this.outputs) {
       if (Array.isArray(outputs.outputs)) {
         const chatOutput = outputs.outputs.find(
-          (output) => !!output?.outputs?.message,
+          (output) => !!output?.outputs?.message
         );
         return chatOutput?.outputs?.message.message.text;
       }

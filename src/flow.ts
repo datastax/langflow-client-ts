@@ -34,7 +34,7 @@ export class Flow {
 
   async run(
     input_value: string,
-    options: Partial<Omit<FlowRequestOptions, "input_value">>,
+    options: Partial<Omit<FlowRequestOptions, "input_value">>
   ) {
     const { input_type = "chat", output_type = "chat", session_id } = options;
     const tweaks = { ...this.tweaks, ...options.tweaks };
@@ -52,7 +52,7 @@ export class Flow {
       `/run/${this.id}`,
       "POST",
       body,
-      headers,
+      headers
     )) as LangflowResponse;
 
     return new FlowResponse(result);
@@ -73,7 +73,7 @@ export class Flow {
       `/files/upload/${this.id}`,
       "POST",
       form,
-      headers,
+      headers
     )) as LangflowUploadResponse;
     return new UploadResponse(response);
   }

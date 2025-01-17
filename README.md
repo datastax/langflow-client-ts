@@ -1,6 +1,6 @@
 # JavaScript client for the Langflow API
 
-This package provides an easy way to use the [Langflow API](https://docs.datastax.com/en/langflow/api.html) from within server-side JavaScript applications.
+This package provides an easy way to use the [Langflow API](https://docs.datastax.com/en/langflow/api.html) to run flows from within server-side JavaScript applications.
 
 - [Installation](#installation)
   - [With npm](#with-npm)

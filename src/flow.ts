@@ -48,7 +48,7 @@ export class Flow {
 
   async run(
     input_value: string,
-    options: Partial<Omit<FlowRequestOptions, "input_value">>
+    options: Partial<Omit<FlowRequestOptions, "input_value">> = {}
   ) {
     const { input_type = "chat", output_type = "chat", session_id } = options;
     const tweaks = { ...this.tweaks, ...options.tweaks };

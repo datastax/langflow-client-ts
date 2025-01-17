@@ -55,12 +55,32 @@ describe("Flow", () => {
   });
 
   describe("run", () => {
-    it("sends a request to the server at the run endpoint", async () => {
+    it("sends a request to the server at the run endpoint providing options", async () => {
       const fetcher = createMockFetch(
         { session_id: "session-id", outputs: [] },
         (input, init) => {
           assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
           assert.equal(init?.method, "POST");
+        }
+      );
+      const client = new LangflowClient({
+        baseUrl: "http://localhost:7860",
+        fetch: fetcher,
+      });
+      const flow = new Flow(client, "flow-id");
+
+      const result = await flow.run("Hello");
+
+      assert.ok(result instanceof FlowResponse);
+    });
+
+    it("sends a request to the server at the run endpoint providing options", async () => {
+      const fetcher = createMockFetch(
+        { session_id: "session-id", outputs: [] },
+        (input, init) => {
+          assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
+          assert.equal(init?.method, "POST");
+          assert.match(String(init?.body), /"input_type":"chat"/);
         }
       );
       const client = new LangflowClient({

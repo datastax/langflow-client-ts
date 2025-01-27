@@ -28,6 +28,7 @@ import {
 
 import { readFile } from "node:fs/promises";
 import { extname, basename } from "node:path";
+import { sign } from "node:crypto";
 
 export class Flow {
   client: LangflowClient;
@@ -50,7 +51,12 @@ export class Flow {
     input_value: string,
     options: Partial<Omit<FlowRequestOptions, "input_value">> = {}
   ) {
-    const { input_type = "chat", output_type = "chat", session_id } = options;
+    const {
+      input_type = "chat",
+      output_type = "chat",
+      session_id,
+      signal,
+    } = options;
     const tweaks = { ...this.tweaks, ...options.tweaks };
     const body = JSON.stringify({
       input_type,
@@ -62,18 +68,20 @@ export class Flow {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
-    const result = (await this.client.request(
-      `/run/${this.id}`,
-      "POST",
+    const result = (await this.client.request({
+      path: `/run/${this.id}`,
+      method: "POST",
       body,
-      headers
-    )) as LangflowResponse;
+      headers,
+      signal,
+    })) as LangflowResponse;
 
     return new FlowResponse(result);
   }
 
-  async uploadFile(path: string) {
+  async uploadFile(path: string, options: { signal?: AbortSignal } = {}) {
     const data = await readFile(path);
+    const { signal } = options;
     const type = mime.getType(extname(path));
     const file = new File([data], basename(path), type ? { type } : {});
 
@@ -83,12 +91,13 @@ export class Flow {
     const headers = new Headers();
     headers.set("Accept", "application/json");
 
-    const response = (await this.client.request(
-      `/files/upload/${this.id}`,
-      "POST",
-      form,
-      headers
-    )) as LangflowUploadResponse;
+    const response = (await this.client.request({
+      path: `/files/upload/${this.id}`,
+      method: "POST",
+      body: form,
+      headers,
+      signal,
+    })) as LangflowUploadResponse;
     return new UploadResponse(response);
   }
 }

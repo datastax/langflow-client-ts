@@ -33,6 +33,7 @@ export interface FlowRequestOptions {
   input_value: string;
   tweaks?: Tweaks;
   session_id?: string;
+  signal?: AbortSignal;
 }
 
 export type Tweak = Record<string, string | number | null | boolean>;

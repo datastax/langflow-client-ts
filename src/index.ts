@@ -79,13 +79,15 @@ export class LangflowClient {
     return new Flow(this, flowId, tweaks);
   }
 
-  async request(
-    path: string,
-    method: string,
-    body: string | FormData,
-    headers: Headers,
-    query?: Record<string, string>
-  ): Promise<unknown> {
+  async request(options: {
+    path: string;
+    method: string;
+    body: string | FormData;
+    headers: Headers;
+    query?: Record<string, string>;
+    signal?: AbortSignal;
+  }): Promise<unknown> {
+    const { path, method, body, headers, query, signal } = options;
     const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
     for (const [header, value] of this.defaultHeaders.entries()) {
       if (!headers.has(header)) {
@@ -101,7 +103,7 @@ export class LangflowClient {
       this.#setApiKey(this.apiKey, headers);
     }
     try {
-      const response = await this.fetch(url, { method, body, headers });
+      const response = await this.fetch(url, { method, body, headers, signal });
       if (!response.ok) {
         throw new LangflowError(
           `${response.status} - ${response.statusText}`,

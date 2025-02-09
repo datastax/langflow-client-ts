@@ -15,7 +15,11 @@
 import { fetch, FormData } from "undici";
 
 import pkg from "../package.json" with { type: "json" };
-import { LangflowError, LangflowRequestError } from "./errors.js";
+import {
+  LangflowError,
+  LangflowRequestError,
+  LangflowAbortError,
+} from "./errors.js";
 import { Flow } from "./flow.js";
 import type { LangflowClientOptions, Tweaks } from "./types.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "./consts.js";
@@ -103,6 +107,7 @@ export class LangflowClient {
       this.#setApiKey(this.apiKey, headers);
     }
     try {
+      signal?.throwIfAborted();
       const response = await this.fetch(url, { method, body, headers, signal });
       if (!response.ok) {
         throw new LangflowError(
@@ -110,10 +115,14 @@ export class LangflowClient {
           response
         );
       }
+      signal?.throwIfAborted();
       return await response.json();
     } catch (error) {
       if (error instanceof LangflowError) {
         throw error;
+      }
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new LangflowAbortError(error.message, { cause: error });
       }
       if (error instanceof Error) {
         throw new LangflowRequestError(error.message, error);

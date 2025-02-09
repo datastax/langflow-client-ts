@@ -15,7 +15,11 @@
 import { Headers } from "undici";
 
 import { LangflowClient } from "../index.js";
-import { LangflowRequestError, LangflowError } from "../errors.js";
+import {
+  LangflowRequestError,
+  LangflowError,
+  LangflowAbortError,
+} from "../errors.js";
 import { Flow } from "../flow.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "../consts.js";
 import { createMockFetch } from "./utils.js";
@@ -228,6 +232,41 @@ describe("LangflowClient", () => {
         } catch (error) {
           assert.ok(error instanceof LangflowRequestError);
           assert.equal(error.message, "Internal Server Error");
+        }
+      });
+
+      it("throws a LangflowAbortError if the request is aborted", async () => {
+        const fetcher = createMockFetch(
+          { session_id: "session-id", outputs: [] },
+          () => {
+            assert.fail("Should not have made a request");
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          langflowId,
+          apiKey,
+          fetch: fetcher,
+        });
+        const ac = new AbortController();
+        ac.abort();
+        try {
+          await client.request({
+            path: "/run/flow-id",
+            method: "POST",
+            body: JSON.stringify({
+              input_type: "chat",
+              output_type: "chat",
+              input_value: "Hello, world!",
+            }),
+            headers: new Headers(),
+            signal: ac.signal,
+          });
+          assert.fail("Expected an error to be thrown");
+        } catch (error) {
+          assert.ok(error instanceof LangflowAbortError);
+          assert.equal(error.message, ac.signal.reason.message);
         }
       });
     });

@@ -39,5 +39,3 @@ export class LangflowRequestError extends Error {
     return this.cause;
   }
 }
-
-export class LangflowAbortError extends Error {}

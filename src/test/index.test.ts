@@ -15,11 +15,7 @@
 import { Headers } from "undici";
 
 import { LangflowClient } from "../index.js";
-import {
-  LangflowRequestError,
-  LangflowError,
-  LangflowAbortError,
-} from "../errors.js";
+import { LangflowRequestError, LangflowError } from "../errors.js";
 import { Flow } from "../flow.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "../consts.js";
 import { createMockFetch } from "./utils.js";
@@ -235,7 +231,7 @@ describe("LangflowClient", () => {
         }
       });
 
-      it("throws a LangflowAbortError if the request is aborted", async () => {
+      it("throws a DOMException AbortError if the request is aborted", async () => {
         const fetcher = createMockFetch(
           { session_id: "session-id", outputs: [] },
           () => {
@@ -265,7 +261,7 @@ describe("LangflowClient", () => {
           });
           assert.fail("Expected an error to be thrown");
         } catch (error) {
-          assert.ok(error instanceof LangflowAbortError);
+          assert.ok(error instanceof DOMException);
           assert.equal(error.message, ac.signal.reason.message);
         }
       });

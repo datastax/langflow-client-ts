@@ -118,11 +118,13 @@ export class LangflowClient {
       signal?.throwIfAborted();
       return await response.json();
     } catch (error) {
-      if (error instanceof LangflowError) {
+      // If it is a LangflowError or the result of an aborted signal, rethrow it
+      if (
+        error instanceof LangflowError ||
+        (error instanceof DOMException &&
+          (error.name === "AbortError" || error.name === "TimeoutError"))
+      ) {
         throw error;
-      }
-      if (error instanceof DOMException && error.name === "AbortError") {
-        throw new LangflowAbortError(error.message, { cause: error });
       }
       if (error instanceof Error) {
         throw new LangflowRequestError(error.message, error);

@@ -19,7 +19,12 @@ type RequestInfo = string | URL | Request;
 export function createMockFetch<T>(
   response: T,
   spiesOn: (input: RequestInfo, init?: RequestInit) => void,
-  options?: { ok?: boolean; status?: number; statusText?: string }
+  options?: {
+    ok?: boolean;
+    status?: number;
+    statusText?: string;
+    body?: ReadableStream;
+  }
 ): (input: RequestInfo, init?: RequestInit) => Promise<Response> {
   return function (input: RequestInfo, init?: RequestInit): Promise<Response> {
     spiesOn(input, init);
@@ -32,6 +37,7 @@ export function createMockFetch<T>(
       ok: options?.ok ?? true,
       status: options?.status ?? 200,
       statusText: options?.statusText ?? "OK",
+      body: options?.body,
       json: async () => response,
       text: async () => JSON.stringify(response),
     } as Response);

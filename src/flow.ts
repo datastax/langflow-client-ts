@@ -78,6 +78,37 @@ export class Flow {
     return new FlowResponse(result);
   }
 
+  async stream(
+    input_value: string,
+    options: Partial<Omit<FlowRequestOptions, "input_value">> = {}
+  ) {
+    const {
+      input_type = "chat",
+      output_type = "chat",
+      session_id,
+      signal,
+    } = options;
+    const tweaks = { ...this.tweaks, ...options.tweaks };
+    const body = JSON.stringify({
+      input_type,
+      output_type,
+      input_value,
+      tweaks,
+      session_id,
+    });
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    headers.set("Accept", "application/json");
+    const streamingResult = await this.client.stream({
+      path: `/run/${this.id}`,
+      method: "POST",
+      body,
+      headers,
+      signal,
+    });
+    return streamingResult;
+  }
+
   async uploadFile(path: string, options: { signal?: AbortSignal } = {}) {
     const data = await readFile(path);
     const { signal } = options;

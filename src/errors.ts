@@ -21,21 +21,11 @@ export class LangflowError extends Error {
     super(message, { cause: response });
     this.cause = response;
   }
-
-  response(): Response {
-    return this.cause;
-  }
 }
 
 export class LangflowRequestError extends Error {
-  cause: Error;
-
   constructor(message: string, error: Error) {
     super(message, { cause: error });
     this.cause = error;
-  }
-
-  error(): Error {
-    return this.cause;
   }
 }

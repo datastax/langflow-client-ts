@@ -94,16 +94,16 @@ describe("LangflowClient", () => {
           apiKey,
           fetch: fetcher,
         });
-        const response = await client.request(
-          "/run/flow-id",
-          "POST",
-          JSON.stringify({
+        const response = await client.request({
+          path: "/run/flow-id",
+          method: "POST",
+          body: JSON.stringify({
             input_type: "chat",
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
-        );
+          headers: new Headers(),
+        });
         assert.deepEqual(response, { session_id: "session-id", outputs: [] });
       });
 
@@ -122,16 +122,16 @@ describe("LangflowClient", () => {
           apiKey,
           fetch: fetcher,
         });
-        await client.request(
-          "/run/flow-id",
-          "POST",
-          JSON.stringify({
+        await client.request({
+          path: "/run/flow-id",
+          method: "POST",
+          body: JSON.stringify({
             input_type: "chat",
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
-        );
+          headers: new Headers(),
+        });
       });
 
       it("includes a user agent in the headers", async () => {
@@ -154,16 +154,16 @@ describe("LangflowClient", () => {
           apiKey,
           fetch: fetcher,
         });
-        await client.request(
-          "/run/flow-id",
-          "POST",
-          JSON.stringify({
+        await client.request({
+          path: "/run/flow-id",
+          method: "POST",
+          body: JSON.stringify({
             input_type: "chat",
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
-        );
+          headers: new Headers(),
+        });
       });
 
       it("throws a LangflowError if the response is not ok", async () => {
@@ -182,16 +182,16 @@ describe("LangflowClient", () => {
         });
 
         try {
-          await client.request(
-            "/run/flow-id",
-            "POST",
-            JSON.stringify({
+          await client.request({
+            path: "/run/flow-id",
+            method: "POST",
+            body: JSON.stringify({
               input_type: "chat",
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
-          );
+            headers: new Headers(),
+          });
           assert.fail("Expected an error to be thrown");
         } catch (error) {
           assert.ok(error instanceof LangflowError);
@@ -214,20 +214,55 @@ describe("LangflowClient", () => {
         });
 
         try {
-          await client.request(
-            "/run/flow-id",
-            "POST",
-            JSON.stringify({
+          await client.request({
+            path: "/run/flow-id",
+            method: "POST",
+            body: JSON.stringify({
               input_type: "chat",
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
-          );
+            headers: new Headers(),
+          });
           assert.fail("Expected an error to be thrown");
         } catch (error) {
           assert.ok(error instanceof LangflowRequestError);
           assert.equal(error.message, "Internal Server Error");
+        }
+      });
+
+      it("throws a DOMException AbortError if the request is aborted", async () => {
+        const fetcher = createMockFetch(
+          { session_id: "session-id", outputs: [] },
+          () => {
+            assert.fail("Should not have made a request");
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          langflowId,
+          apiKey,
+          fetch: fetcher,
+        });
+        const ac = new AbortController();
+        ac.abort();
+        try {
+          await client.request({
+            path: "/run/flow-id",
+            method: "POST",
+            body: JSON.stringify({
+              input_type: "chat",
+              output_type: "chat",
+              input_value: "Hello, world!",
+            }),
+            headers: new Headers(),
+            signal: ac.signal,
+          });
+          assert.fail("Expected an error to be thrown");
+        } catch (error) {
+          assert.ok(error instanceof DOMException);
+          assert.equal(error.message, ac.signal.reason.message);
         }
       });
     });
@@ -268,16 +303,16 @@ describe("LangflowClient", () => {
           baseUrl,
           fetch: fetcher,
         });
-        const response = await client.request(
-          "/run/flow-id",
-          "POST",
-          JSON.stringify({
+        const response = await client.request({
+          path: "/run/flow-id",
+          method: "POST",
+          body: JSON.stringify({
             input_type: "chat",
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
-        );
+          headers: new Headers(),
+        });
         assert.deepEqual(response, { session_id: "session-id", outputs: [] });
       });
 
@@ -295,16 +330,16 @@ describe("LangflowClient", () => {
           apiKey,
           fetch: fetcher,
         });
-        await client.request(
-          "/run/flow-id",
-          "POST",
-          JSON.stringify({
+        await client.request({
+          path: "/run/flow-id",
+          method: "POST",
+          body: JSON.stringify({
             input_type: "chat",
             output_type: "chat",
             input_value: "Hello, world!",
           }),
-          new Headers()
-        );
+          headers: new Headers(),
+        });
       });
 
       it("throws a LangflowError if the response is not ok", async () => {
@@ -321,16 +356,16 @@ describe("LangflowClient", () => {
         });
 
         try {
-          await client.request(
-            "/run/flow-id",
-            "POST",
-            JSON.stringify({
+          await client.request({
+            path: "/run/flow-id",
+            method: "POST",
+            body: JSON.stringify({
               input_type: "chat",
               output_type: "chat",
               input_value: "Hello, world!",
             }),
-            new Headers()
-          );
+            headers: new Headers(),
+          });
           assert.fail("Expected an error to be thrown");
         } catch (error) {
           assert.ok(error instanceof LangflowError);

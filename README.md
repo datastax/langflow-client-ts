@@ -15,6 +15,7 @@ This package provides an easy way to use the [Langflow API](https://docs.datasta
   - [Calling a flow](#calling-a-flow)
     - [Flow reponses](#flow-reponses)
   - [File upload](#file-upload)
+  - [Aborting requests](#aborting-requests)
 - [Contributing](#contributing)
 
 ## Installation
@@ -157,6 +158,21 @@ const response = await flow.tweak("ChatInput-abcd": { files: file.filePath }).ru
 
 > [!WARNING]  
 > DataStax Langflow doesn't make file upload available, you will receive a 501 Not Implemented error.
+
+### Aborting requests
+
+You can use the standard [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) to cancel requests by passing a `signal` to the `run` or `uploadFile` functions. The functions will reject with a `DOMException` error with the name `AbortError` or, if you use [`AbortSignal.timeout`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static), `TimeoutError`.
+
+For example, when running the following code, if the entire request takes longer than 500ms, then the promise will reject and the error message will be, "The operation was aborted due to timeout".
+
+```js
+const signal = AbortSignal.timeout(500);
+try {
+  const response = await client.flow(flowId).run(input, { signal });
+} catch (error) {
+  console.error(error.message);
+}
+```
 
 ## Contributing
 

@@ -12,15 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { fetch, FormData } from "undici";
+import { fetch } from "undici";
 
 import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
 import { Flow } from "./flow.js";
-import type { LangflowClientOptions, Tweaks } from "./types.js";
+import type {
+  LangflowClientOptions,
+  RequestOptions,
+  StreamEvent,
+  Tweaks,
+} from "./types.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "./consts.js";
 
 import { platform, arch } from "os";
+import { NDJSONStream } from "./ndjson.js";
 
 export class LangflowClient {
   baseUrl: string;
@@ -75,33 +81,25 @@ export class LangflowClient {
     }
   }
 
-  flow(flowId: string, tweaks?: Tweaks): Flow {
-    return new Flow(this, flowId, tweaks);
-  }
-
-  async request(options: {
-    path: string;
-    method: string;
-    body: string | FormData;
-    headers: Headers;
-    query?: Record<string, string>;
-    signal?: AbortSignal;
-  }): Promise<unknown> {
-    const { path, method, body, headers, query, signal } = options;
-    const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
+  #setHeaders(headers: Headers) {
     for (const [header, value] of this.defaultHeaders.entries()) {
       if (!headers.has(header)) {
         headers.set(header, value);
       }
     }
-    if (query) {
-      Object.entries(query).forEach(([key, value]) => {
-        url.searchParams.set(key, value);
-      });
-    }
     if (this.apiKey) {
       this.#setApiKey(this.apiKey, headers);
     }
+  }
+
+  flow(flowId: string, tweaks?: Tweaks): Flow {
+    return new Flow(this, flowId, tweaks);
+  }
+
+  async request(options: RequestOptions): Promise<unknown> {
+    const { path, method, body, headers, signal } = options;
+    const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
+    this.#setHeaders(headers);
     try {
       signal?.throwIfAborted();
       const response = await this.fetch(url, { method, body, headers, signal });
@@ -115,6 +113,48 @@ export class LangflowClient {
       return await response.json();
     } catch (error) {
       // If it is a LangflowError or the result of an aborted signal, rethrow it
+      if (
+        error instanceof LangflowError ||
+        (error instanceof DOMException &&
+          (error.name === "AbortError" || error.name === "TimeoutError"))
+      ) {
+        throw error;
+      }
+      if (error instanceof Error) {
+        throw new LangflowRequestError(error.message, error);
+      }
+      throw error;
+    }
+  }
+
+  async stream(options: RequestOptions): Promise<ReadableStream<StreamEvent>> {
+    const { path, method, body, headers, signal } = options;
+    const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
+    url.searchParams.set("stream", "true");
+    this.#setHeaders(headers);
+    try {
+      signal?.throwIfAborted();
+      const response = await this.fetch(url, {
+        method,
+        body,
+        headers,
+        signal,
+      });
+      if (!response.ok) {
+        throw new LangflowError(
+          `${response.status} - ${response.statusText}`,
+          response
+        );
+      }
+      const ndjsonStream = NDJSONStream<StreamEvent>();
+      if (response.body) {
+        return response.body
+          .pipeThrough(new TextDecoderStream(), { signal })
+          .pipeThrough(ndjsonStream, { signal });
+      } else {
+        throw new LangflowError("No body in the response", response);
+      }
+    } catch (error) {
       if (
         error instanceof LangflowError ||
         (error instanceof DOMException &&

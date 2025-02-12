@@ -373,5 +373,173 @@ describe("LangflowClient", () => {
         }
       });
     });
+
+    describe("stream", () => {
+      const exampleBody = JSON.stringify({
+        input_type: "chat",
+        output_type: "chat",
+        input_value: "Hello, world!",
+      });
+
+      it("makes a streaming request with the stream parameter", async () => {
+        const events = [
+          { event: "add_message", data: {} },
+          {
+            event: "token",
+            data: {
+              id: "abc123",
+              chunk: "Hello",
+              timestamp: "2025-02-10 04:18:42 UTC",
+            },
+          },
+          {
+            event: "end",
+            data: { result: { session_id: "def465", outputs: [] } },
+          },
+        ];
+        const fetcher = createMockFetch(
+          events,
+          (input, init) => {
+            const url = new URL(input);
+            assert.equal(url.searchParams.get("stream"), "true");
+            assert.equal(url.pathname, "/api/v1/run/flow-id");
+            assert.equal(init?.method, "POST");
+          },
+          {
+            ok: true,
+            body: ReadableStream.from(
+              events.map((e) => JSON.stringify(e))
+            ).pipeThrough(new TextEncoderStream()),
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          fetch: fetcher,
+        });
+
+        const stream = await client.stream({
+          path: "/run/flow-id",
+          method: "POST",
+          headers: new Headers(),
+          body: exampleBody,
+        });
+
+        const receivedEvents = [];
+        for await (const value of stream) {
+          receivedEvents.push(value);
+        }
+        assert.deepEqual(receivedEvents, events);
+      });
+
+      it("includes the API key in x-api-key header for streams", async () => {
+        const fetcher = createMockFetch(
+          {},
+          (input, init) => {
+            const headers = new Headers(init?.headers);
+            assert.equal(headers.get("x-api-key"), apiKey);
+          },
+          {
+            ok: true,
+            body: new ReadableStream({
+              start(controller) {
+                controller.close();
+              },
+            }),
+          }
+        );
+
+        const client = new LangflowClient({
+          baseUrl,
+          apiKey,
+          fetch: fetcher,
+        });
+
+        await client.stream({
+          path: "/run/flow-id",
+          method: "POST",
+          headers: new Headers(),
+          body: exampleBody,
+        });
+      });
+
+      it("handles stream abort signal", async () => {
+        const ac = new AbortController();
+        ac.abort();
+
+        const fetcher = createMockFetch({}, () => {
+          assert.fail("Should not have made a request");
+        });
+
+        const client = new LangflowClient({
+          baseUrl,
+          fetch: fetcher,
+        });
+
+        try {
+          await client.stream({
+            path: "/run/flow-id",
+            method: "POST",
+            headers: new Headers(),
+            body: exampleBody,
+            signal: ac.signal,
+          });
+          assert.fail("Expected an error to be thrown");
+        } catch (error) {
+          assert.ok(error instanceof DOMException);
+          assert.equal(error.name, "AbortError");
+        }
+      });
+
+      it("throws LangflowError if stream response has no body", async () => {
+        const fetcher = createMockFetch({}, () => {}, {
+          ok: true,
+        });
+
+        const client = new LangflowClient({
+          baseUrl,
+          fetch: fetcher,
+        });
+
+        try {
+          await client.stream({
+            path: "/run/flow-id",
+            method: "POST",
+            headers: new Headers(),
+            body: exampleBody,
+          });
+          assert.fail("Expected an error to be thrown");
+        } catch (error) {
+          assert.ok(error instanceof LangflowError);
+          assert.equal(error.message, "No body in the response");
+        }
+      });
+
+      it("throws LangflowError if stream response is not ok", async () => {
+        const fetcher = createMockFetch({}, () => {}, {
+          ok: false,
+          status: 401,
+          statusText: "Unauthorized",
+        });
+
+        const client = new LangflowClient({
+          baseUrl,
+          fetch: fetcher,
+        });
+
+        try {
+          await client.stream({
+            path: "/run/flow-id",
+            method: "POST",
+            headers: new Headers(),
+            body: exampleBody,
+          });
+          assert.fail("Expected an error to be thrown");
+        } catch (error) {
+          assert.ok(error instanceof LangflowError);
+          assert.equal(error.message, "401 - Unauthorized");
+        }
+      });
+    });
   });
 });

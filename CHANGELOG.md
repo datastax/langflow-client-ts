@@ -1,6 +1,19 @@
 # Changelog for `@datastax/langflow-client`
 
-## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.1.0...main)
+## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.1.1...main)
+
+## 0.2.0 (February 13, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.1.1...v0.2.0)
+
+### Added
+
+- Support for streaming responses with `flow.stream()`
+- Support for AbortController and request timeouts
+- Repository, homepage, and bugs links to package.json
+
+### Changed
+
+- Simplified error classes
+- Updated documentation with streaming and request aborting sections
 
 ## 0.1.1 (January 17, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.1.0...v0.1.1)
 

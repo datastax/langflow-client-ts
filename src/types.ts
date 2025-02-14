@@ -39,7 +39,8 @@ export interface FlowRequestOptions {
 export interface RequestOptions {
   path: string;
   method: string;
-  body: string | FormData;
+  query?: Record<string, string>;
+  body?: string | FormData;
   headers: Headers;
   signal?: AbortSignal;
 }

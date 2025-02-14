@@ -25,7 +25,14 @@ export function NDJSONStream<T>(
         const text = chunk.toString();
         const lines = text.split("\n");
         for (const line of lines) {
-          buffer += line;
+          if (buffer.length === 0) {
+            // Ignore lines until we find the start of a JSON object
+            if (line.trimStart().startsWith("{")) {
+              buffer += line;
+            }
+          } else {
+            buffer += line;
+          }
           try {
             const result = JSON.parse(buffer);
             controller.enqueue(result);

@@ -24,6 +24,7 @@ import {
   FlowRequestOptions,
   LangflowResponse,
   LangflowUploadResponse,
+  StreamEvent,
 } from "./types.js";
 
 import { readFile } from "node:fs/promises";
@@ -99,7 +100,7 @@ export class Flow {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
-    const streamingResult = await this.client.stream({
+    const streamingResult = await this.client.stream<StreamEvent>({
       path: `/run/${this.id}`,
       method: "POST",
       body,

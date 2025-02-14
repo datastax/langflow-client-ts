@@ -59,7 +59,7 @@ describe("NDJSONStream", () => {
     assert.deepEqual(results, [{ test: "value" }]);
   });
 
-  it("stops transforming on invalid input", async () => {
+  it("ignores invalid lines", async () => {
     const inputStream = ReadableStream.from([
       '{"valid": "json"}\ninvalid\n{"also": "valid"}\n',
     ]);
@@ -67,7 +67,18 @@ describe("NDJSONStream", () => {
     const readable = inputStream.pipeThrough(transform);
 
     const results = await collectStream(readable);
-    assert.deepEqual(results, [{ valid: "json" }]);
+    assert.deepEqual(results, [{ valid: "json" }, { also: "valid" }]);
+  });
+
+  it("doesn't ignore strings halfway through a JSON object", async () => {
+    const inputStream = ReadableStream.from([
+      '{"valid": "json \ninvalid\n valid"}\n',
+    ]);
+    const transform = NDJSONStream();
+    const readable = inputStream.pipeThrough(transform);
+
+    const results = await collectStream(readable);
+    assert.deepEqual(results, [{ valid: "json invalid valid" }]);
   });
 
   it("handles empty input", async () => {

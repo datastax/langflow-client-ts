@@ -17,12 +17,8 @@ import { fetch } from "undici";
 import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
 import { Flow } from "./flow.js";
-import type {
-  LangflowClientOptions,
-  RequestOptions,
-  StreamEvent,
-  Tweaks,
-} from "./types.js";
+import { Logs } from "./logs.js";
+import type { LangflowClientOptions, RequestOptions, Tweaks } from "./types.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "./consts.js";
 
 import { platform, arch } from "os";
@@ -35,6 +31,7 @@ export class LangflowClient {
   apiKey?: string;
   fetch: typeof fetch;
   defaultHeaders: Headers;
+  logs: Logs;
 
   constructor(opts: LangflowClientOptions) {
     this.baseUrl = opts.baseUrl ?? DATASTAX_LANGFLOW_BASE_URL;
@@ -63,6 +60,7 @@ export class LangflowClient {
     if (!this.#isDataStax() && this.langflowId) {
       throw new TypeError("langflowId is not supported");
     }
+    this.logs = new Logs(this);
   }
 
   #isDataStax(): boolean {
@@ -92,13 +90,25 @@ export class LangflowClient {
     }
   }
 
+  #setUrl(path: string) {
+    if (["/logs", "/logs-stream"].includes(path)) {
+      return new URL(`${this.baseUrl}${path}`);
+    }
+    return new URL(`${this.baseUrl}${this.basePath}${path}`);
+  }
+
   flow(flowId: string, tweaks?: Tweaks): Flow {
     return new Flow(this, flowId, tweaks);
   }
 
   async request(options: RequestOptions): Promise<unknown> {
-    const { path, method, body, headers, signal } = options;
-    const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
+    const { path, method, query, body, headers, signal } = options;
+    const url = this.#setUrl(path);
+    if (query) {
+      for (const [key, value] of Object.entries(query)) {
+        url.searchParams.append(key, value);
+      }
+    }
     this.#setHeaders(headers);
     try {
       signal?.throwIfAborted();
@@ -127,9 +137,9 @@ export class LangflowClient {
     }
   }
 
-  async stream(options: RequestOptions): Promise<ReadableStream<StreamEvent>> {
+  async stream<T>(options: RequestOptions): Promise<ReadableStream<T>> {
     const { path, method, body, headers, signal } = options;
-    const url = new URL(`${this.baseUrl}${this.basePath}${path}`);
+    const url = this.#setUrl(path);
     url.searchParams.set("stream", "true");
     this.#setHeaders(headers);
     try {
@@ -146,8 +156,8 @@ export class LangflowClient {
           response
         );
       }
-      const ndjsonStream = NDJSONStream<StreamEvent>();
       if (response.body) {
+        const ndjsonStream = NDJSONStream<T>();
         return response.body
           .pipeThrough(new TextDecoderStream(), { signal })
           .pipeThrough(ndjsonStream, { signal });

@@ -16,10 +16,12 @@ This package provides an easy way to use the [Langflow API](https://docs.datasta
   - [Open-source Langflow](#open-source-langflow)
 - [Usage](#usage)
   - [Initialization](#initialization)
-  - [Calling a flow](#calling-a-flow)
+  - [Running a flow](#running-a-flow)
     - [Flow reponses](#flow-reponses)
   - [Streaming](#streaming)
   - [File upload](#file-upload)
+  - [Logs](#logs)
+    - [Fetching the logs](#fetching-the-logs)
   - [Aborting requests](#aborting-requests)
 - [Contributing](#contributing)
 
@@ -87,7 +89,7 @@ const apiKey = "sk-...";
 const osLangflowClient = new LangflowClient({ baseUrl, apiKey });
 ```
 
-### Calling a flow
+### Running a flow
 
 Once you have a client, you can create a reference to a flow using the `flowID`. This can be found in the API modal in Langflow.
 
@@ -205,6 +207,24 @@ const response = await flow.tweak("ChatInput-abcd": { files: file.filePath }).ru
 
 > [!WARNING]  
 > DataStax Langflow doesn't make file upload available, you will receive a 501 Not Implemented error.
+
+### Logs
+
+#### Fetching the logs
+
+You can fetch the logs for the your Langflow instance. You can either fetch the logs.
+
+```js
+const logs = await client.logs.fetch();
+```
+
+Or stream the logs:
+
+```js
+for await (const log of client.logs.stream()) {
+  console.log(log);
+}
+```
 
 ### Aborting requests
 

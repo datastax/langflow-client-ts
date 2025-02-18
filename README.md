@@ -1,5 +1,9 @@
 # JavaScript client for the Langflow API
 
+[![NPM Version](https://img.shields.io/npm/v/%40datastax%2Flangflow-client?logo=npm&color=%23ea2039)](https://www.npmjs.com/@datastax/langflow-client) [![Tests](https://github.com/datastax/langflow-client-ts/actions/workflows/test.yml/badge.svg)](https://github.com/datastax/langflow-client-ts/actions/workflows/test.yml)
+
+---
+
 This package provides an easy way to use the [Langflow API](https://docs.datastax.com/en/langflow/api.html) to run flows from within server-side JavaScript applications.
 
 - [Installation](#installation)

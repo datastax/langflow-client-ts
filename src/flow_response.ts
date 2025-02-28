@@ -39,7 +39,12 @@ export class FlowResponse {
         const chatOutput = outputs.outputs.find(
           (output) => !!output?.outputs?.message
         );
-        return chatOutput?.outputs?.message.message.text;
+        const message = chatOutput?.outputs?.message.message;
+        if (typeof message === "string") {
+          return message;
+        } else {
+          return message?.text;
+        }
       }
     }
     return undefined;

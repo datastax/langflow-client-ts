@@ -1,0 +1,147 @@
+{
+  "sessionId": "700a1dea-22f8-4340-89bb-6b8f22fa6615",
+  "outputs": [
+    {
+      "inputs": { "input_value": "hi there" },
+      "outputs": [
+        {
+          "results": {
+            "message": {
+              "text_key": "text",
+              "data": {
+                "timestamp": "2025-02-28T21:12:26+00:00",
+                "sender": "Machine",
+                "sender_name": "AI",
+                "session_id": "700a1dea-22f8-4340-89bb-6b8f22fa6615",
+                "text": "Hi again! How can I help you today? If you have any questions or topics you'd like to discuss, just let me know!",
+                "files": [],
+                "error": false,
+                "edit": false,
+                "properties": {
+                  "text_color": "",
+                  "background_color": "",
+                  "edited": false,
+                  "source": {
+                    "id": "Agent-PotPO",
+                    "display_name": "Agent",
+                    "source": "gpt-4o-mini"
+                  },
+                  "icon": "bot",
+                  "allow_markdown": false,
+                  "positive_feedback": null,
+                  "state": "complete",
+                  "targets": []
+                },
+                "category": "message",
+                "content_blocks": [
+                  {
+                    "title": "Agent Steps",
+                    "contents": [
+                      {
+                        "type": "text",
+                        "duration": 2,
+                        "header": { "title": "Input", "icon": "MessageSquare" },
+                        "text": "**Input**: hi there"
+                      },
+                      {
+                        "type": "text",
+                        "duration": 1302,
+                        "header": {
+                          "title": "Output",
+                          "icon": "MessageSquare"
+                        },
+                        "text": "Hi again! How can I help you today? If you have any questions or topics you'd like to discuss, just let me know!"
+                      }
+                    ],
+                    "allow_markdown": true,
+                    "media_url": null
+                  }
+                ],
+                "id": "a531acc1-cc2d-4ecc-a313-71278436e450",
+                "flow_id": "700a1dea-22f8-4340-89bb-6b8f22fa6615"
+              },
+              "default_value": "",
+              "text": "Hi again! How can I help you today? If you have any questions or topics you'd like to discuss, just let me know!",
+              "sender": "Machine",
+              "sender_name": "AI",
+              "files": [],
+              "session_id": "700a1dea-22f8-4340-89bb-6b8f22fa6615",
+              "timestamp": "2025-02-28T21:12:26+00:00",
+              "flow_id": "700a1dea-22f8-4340-89bb-6b8f22fa6615",
+              "error": false,
+              "edit": false,
+              "properties": {
+                "text_color": "",
+                "background_color": "",
+                "edited": false,
+                "source": {
+                  "id": "Agent-PotPO",
+                  "display_name": "Agent",
+                  "source": "gpt-4o-mini"
+                },
+                "icon": "bot",
+                "allow_markdown": false,
+                "positive_feedback": null,
+                "state": "complete",
+                "targets": []
+              },
+              "category": "message",
+              "content_blocks": [
+                {
+                  "title": "Agent Steps",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "duration": 2,
+                      "header": { "title": "Input", "icon": "MessageSquare" },
+                      "text": "**Input**: hi there"
+                    },
+                    {
+                      "type": "text",
+                      "duration": 1302,
+                      "header": { "title": "Output", "icon": "MessageSquare" },
+                      "text": "Hi again! How can I help you today? If you have any questions or topics you'd like to discuss, just let me know!"
+                    }
+                  ],
+                  "allow_markdown": true,
+                  "media_url": null
+                }
+              ]
+            }
+          },
+          "artifacts": {
+            "message": "Hi again! How can I help you today? If you have any questions or topics you'd like to discuss, just let me know!",
+            "sender": "Machine",
+            "sender_name": "AI",
+            "files": [],
+            "type": "object"
+          },
+          "outputs": {
+            "message": {
+              "message": "Hi again! How can I help you today? If you have any questions or topics you'd like to discuss, just let me know!",
+              "type": "text"
+            }
+          },
+          "logs": { "message": [] },
+          "messages": [
+            {
+              "message": "Hi again! How can I help you today? If you have any questions or topics you'd like to discuss, just let me know!",
+              "sender": "Machine",
+              "sender_name": "AI",
+              "session_id": "700a1dea-22f8-4340-89bb-6b8f22fa6615",
+              "stream_url": null,
+              "component_id": "ChatOutput-cyvH4",
+              "files": [],
+              "type": "text"
+            }
+          ],
+          "timedelta": null,
+          "duration": null,
+          "component_display_name": "Chat Output",
+          "component_id": "ChatOutput-cyvH4",
+          "used_frozen_result": false
+        }
+      ]
+    }
+  ]
+}

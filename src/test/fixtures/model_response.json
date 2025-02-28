@@ -1,0 +1,132 @@
+{
+  "sessionId": "1e757ec6-dd3d-41a5-b266-b7118beca8ab",
+  "outputs": [
+    {
+      "inputs": { "input_value": "hello" },
+      "outputs": [
+        {
+          "results": {
+            "message": {
+              "text_key": "text",
+              "data": {
+                "timestamp": "2025-02-28T22:04:19+00:00",
+                "sender": "Machine",
+                "sender_name": "AI",
+                "session_id": "1e757ec6-dd3d-41a5-b266-b7118beca8ab",
+                "text": "Hello! 🌟 I'm excited to help you get started on your journey! What fresh idea or project do you have in mind? Whether it's building something with AI, exploring a new technology, or diving into a creative endeavor, I'm here to assist you every step of the way!",
+                "files": [],
+                "error": false,
+                "edit": false,
+                "properties": {
+                  "text_color": "",
+                  "background_color": "",
+                  "edited": false,
+                  "source": {
+                    "id": "OpenAIModel-sz6xc",
+                    "display_name": "OpenAI",
+                    "source": "gpt-4o-mini"
+                  },
+                  "icon": "OpenAI",
+                  "allow_markdown": false,
+                  "positive_feedback": null,
+                  "state": "complete",
+                  "targets": []
+                },
+                "category": "message",
+                "content_blocks": [],
+                "id": "ddef2cca-236f-4b68-8bcb-a9e7acb21cf2",
+                "flow_id": "1e757ec6-dd3d-41a5-b266-b7118beca8ab"
+              },
+              "default_value": "",
+              "text": "Hello! 🌟 I'm excited to help you get started on your journey! What fresh idea or project do you have in mind? Whether it's building something with AI, exploring a new technology, or diving into a creative endeavor, I'm here to assist you every step of the way!",
+              "sender": "Machine",
+              "sender_name": "AI",
+              "files": [],
+              "session_id": "1e757ec6-dd3d-41a5-b266-b7118beca8ab",
+              "timestamp": "2025-02-28T22:04:19+00:00",
+              "flow_id": "1e757ec6-dd3d-41a5-b266-b7118beca8ab",
+              "error": false,
+              "edit": false,
+              "properties": {
+                "text_color": "",
+                "background_color": "",
+                "edited": false,
+                "source": {
+                  "id": "OpenAIModel-sz6xc",
+                  "display_name": "OpenAI",
+                  "source": "gpt-4o-mini"
+                },
+                "icon": "OpenAI",
+                "allow_markdown": false,
+                "positive_feedback": null,
+                "state": "complete",
+                "targets": []
+              },
+              "category": "message",
+              "content_blocks": []
+            }
+          },
+          "artifacts": {
+            "message": "Hello! 🌟 I'm excited to help you get started on your journey! What fresh idea or project do you have in mind? Whether it's building something with AI, exploring a new technology, or diving into a creative endeavor, I'm here to assist you every step of the way!",
+            "sender": "Machine",
+            "sender_name": "AI",
+            "files": [],
+            "type": "object"
+          },
+          "outputs": {
+            "message": {
+              "message": {
+                "timestamp": "2025-02-28T22:04:19",
+                "sender": "Machine",
+                "sender_name": "AI",
+                "session_id": "1e757ec6-dd3d-41a5-b266-b7118beca8ab",
+                "text": "Hello! 🌟 I'm excited to help you get started on your journey! What fresh idea or project do you have in mind? Whether it's building something with AI, exploring a new technology, or diving into a creative endeavor, I'm here to assist you every step of the way!",
+                "files": [],
+                "error": false,
+                "edit": false,
+                "properties": {
+                  "text_color": "",
+                  "background_color": "",
+                  "edited": false,
+                  "source": {
+                    "id": "OpenAIModel-sz6xc",
+                    "display_name": "OpenAI",
+                    "source": "gpt-4o-mini"
+                  },
+                  "icon": "OpenAI",
+                  "allow_markdown": false,
+                  "positive_feedback": null,
+                  "state": "complete",
+                  "targets": []
+                },
+                "category": "message",
+                "content_blocks": [],
+                "id": "ddef2cca-236f-4b68-8bcb-a9e7acb21cf2",
+                "flow_id": "1e757ec6-dd3d-41a5-b266-b7118beca8ab"
+              },
+              "type": "message"
+            }
+          },
+          "logs": { "message": [] },
+          "messages": [
+            {
+              "message": "Hello! 🌟 I'm excited to help you get started on your journey! What fresh idea or project do you have in mind? Whether it's building something with AI, exploring a new technology, or diving into a creative endeavor, I'm here to assist you every step of the way!",
+              "sender": "Machine",
+              "sender_name": "AI",
+              "session_id": "1e757ec6-dd3d-41a5-b266-b7118beca8ab",
+              "stream_url": null,
+              "component_id": "ChatOutput-PdnPu",
+              "files": [],
+              "type": "message"
+            }
+          ],
+          "timedelta": null,
+          "duration": null,
+          "component_display_name": "Chat Output",
+          "component_id": "ChatOutput-PdnPu",
+          "used_frozen_result": false
+        }
+      ]
+    }
+  ]
+}

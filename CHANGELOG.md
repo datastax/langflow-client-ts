@@ -1,6 +1,12 @@
 # Changelog for `@datastax/langflow-client`
 
-## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.1.1...main)
+## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.1...main)
+
+## 0.2.1 (March 1, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.0...v0.2.1)
+
+### Fixed
+
+- Responses from agent components have a different structure to model components. Now we handle both in `flowResponse.chatOutputText()`
 
 ## 0.2.0 (February 13, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.1.1...v0.2.0)
 

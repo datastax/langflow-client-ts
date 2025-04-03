@@ -3,6 +3,7 @@ import * as assert from "node:assert";
 import { LangflowClient } from "../index.js";
 import { createMockFetch } from "./utils.js";
 import { LangflowRequestError } from "../errors.js";
+import { Headers } from "undici";
 
 const baseUrl = "http://localhost:3000";
 

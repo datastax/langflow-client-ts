@@ -22,6 +22,7 @@ This package provides an easy way to use the [Langflow API](https://docs.datasta
   - [File upload](#file-upload)
   - [Logs](#logs)
     - [Fetching the logs](#fetching-the-logs)
+    - [Streaming the logs](#streaming-the-logs)
   - [Aborting requests](#aborting-requests)
 - [Contributing](#contributing)
 
@@ -90,6 +91,8 @@ const osLangflowClient = new LangflowClient({ baseUrl, apiKey });
 ```
 
 ### Running a flow
+
+[Langflow documentation for running a flow](https://docs.langflow.org/api/simplified-run-flow).
 
 Once you have a client, you can create a reference to a flow using the `flowID`. This can be found in the API modal in Langflow.
 
@@ -193,6 +196,8 @@ There's more [documentation and examples of a streaming response in the Langflow
 
 ### File upload
 
+[Langflow documentation for file upload API](https://docs.langflow.org/api/upload-file-1).
+
 Chat input components support files as input as well as text. You need to upload your file first, using the file upload function, then provide the file path to the flow as a tweak.
 
 ```js
@@ -210,18 +215,31 @@ const response = await flow.tweak("ChatInput-abcd": { files: file.filePath }).ru
 
 ### Logs
 
+[Langflow documentation for the logs API](https://docs.langflow.org/api/logs).
+
 #### Fetching the logs
 
-You can fetch the logs for the your Langflow instance. You can either fetch the logs.
+You can fetch the logs for the your Langflow instance.
 
 ```js
 const logs = await client.logs.fetch();
 ```
 
-Or stream the logs:
+When fetching the logs, you can pass a `timestamp` and either a number of `lines_before` or `lines_after` the timestamp. For example, the following code will get the 10 log lines that happened after 1 hour ago:
 
 ```js
-for await (const log of client.logs.stream()) {
+const logs = await client.logs.fetch({
+  timestamp: Date.now() - 60 * 60 * 1000,
+  lines_after: 10,
+});
+```
+
+#### Streaming the logs
+
+You can also stream the logs by requesting the [streaming endpoint](https://docs.langflow.org/api/stream-logs).
+
+```js
+for await (const log of await client.logs.stream()) {
   console.log(log);
 }
 ```

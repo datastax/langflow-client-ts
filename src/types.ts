@@ -59,6 +59,14 @@ export interface LangflowUploadResponse {
   file_path: string;
 }
 
+export interface LangflowUploadResponseUserFile {
+  id: string;
+  name: string;
+  path: string;
+  size: number;
+  provider?: string;
+}
+
 type TokenStreamEvent = {
   event: "token";
   data: {

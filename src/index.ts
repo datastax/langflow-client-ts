@@ -35,7 +35,7 @@ export class LangflowClient {
 
   constructor(opts: LangflowClientOptions) {
     this.baseUrl = opts.baseUrl ?? DATASTAX_LANGFLOW_BASE_URL;
-    this.basePath = "/api/v1";
+    this.basePath = "/api";
     this.langflowId = opts.langflowId;
     this.apiKey = opts.apiKey;
     this.fetch = opts.fetch ?? fetch;
@@ -55,7 +55,7 @@ export class LangflowClient {
       if (errors.length > 0) {
         throw new TypeError(errors.join(", "));
       }
-      this.basePath = `/lf/${this.langflowId}/api/v1`;
+      this.basePath = `/lf/${this.langflowId}/api`;
     }
     if (!this.#isDataStax() && this.langflowId) {
       throw new TypeError("langflowId is not supported");

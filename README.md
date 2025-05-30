@@ -148,7 +148,7 @@ console.log(response.outputs);
 There is one convenience function that will return you the first chat output message text. If you only have one chat output component in your flow, this is a useful shortcut to get to that response.
 
 ```js
-const response = client.flow(flowId).run(input);
+const response = await client.flow(flowId).run(input);
 console.log(response.chatOutputText());
 ```
 

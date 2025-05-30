@@ -42,7 +42,7 @@ describe("LangflowClient", () => {
 
     it("sets the basePath to use the langflowId", () => {
       const client = new LangflowClient({ baseUrl, langflowId, apiKey });
-      assert.equal(client.basePath, `/lf/${langflowId}/api/v1`);
+      assert.equal(client.basePath, `/lf/${langflowId}/api`);
     });
 
     it("throws an error if initialized without a langflowId", () => {
@@ -95,7 +95,7 @@ describe("LangflowClient", () => {
           fetch: fetcher,
         });
         const response = await client.request({
-          path: "/run/flow-id",
+          path: "/v1/run/flow-id",
           method: "POST",
           body: JSON.stringify({
             input_type: "chat",
@@ -123,7 +123,7 @@ describe("LangflowClient", () => {
           fetch: fetcher,
         });
         await client.request({
-          path: "/run/flow-id",
+          path: "/v1/run/flow-id",
           method: "POST",
           body: JSON.stringify({
             input_type: "chat",
@@ -155,7 +155,7 @@ describe("LangflowClient", () => {
           fetch: fetcher,
         });
         await client.request({
-          path: "/run/flow-id",
+          path: "/v1/run/flow-id",
           method: "POST",
           body: JSON.stringify({
             input_type: "chat",
@@ -183,7 +183,7 @@ describe("LangflowClient", () => {
 
         try {
           await client.request({
-            path: "/run/flow-id",
+            path: "/v1/run/flow-id",
             method: "POST",
             body: JSON.stringify({
               input_type: "chat",
@@ -215,7 +215,7 @@ describe("LangflowClient", () => {
 
         try {
           await client.request({
-            path: "/run/flow-id",
+            path: "/v1/run/flow-id",
             method: "POST",
             body: JSON.stringify({
               input_type: "chat",
@@ -249,7 +249,7 @@ describe("LangflowClient", () => {
         ac.abort();
         try {
           await client.request({
-            path: "/run/flow-id",
+            path: "/v1/run/flow-id",
             method: "POST",
             body: JSON.stringify({
               input_type: "chat",
@@ -279,7 +279,7 @@ describe("LangflowClient", () => {
 
     it("sets the basePath to the basic path", () => {
       const client = new LangflowClient({ baseUrl });
-      assert.equal(client.basePath, `/api/v1`);
+      assert.equal(client.basePath, `/api`);
     });
 
     it("throws an error if langflowId is provided for a custom URL", () => {
@@ -304,7 +304,7 @@ describe("LangflowClient", () => {
           fetch: fetcher,
         });
         const response = await client.request({
-          path: "/run/flow-id",
+          path: "/v1/run/flow-id",
           method: "POST",
           body: JSON.stringify({
             input_type: "chat",
@@ -331,7 +331,7 @@ describe("LangflowClient", () => {
           fetch: fetcher,
         });
         await client.request({
-          path: "/run/flow-id",
+          path: "/v1/run/flow-id",
           method: "POST",
           body: JSON.stringify({
             input_type: "chat",
@@ -357,7 +357,7 @@ describe("LangflowClient", () => {
 
         try {
           await client.request({
-            path: "/run/flow-id",
+            path: "/v1/run/flow-id",
             method: "POST",
             body: JSON.stringify({
               input_type: "chat",
@@ -419,7 +419,7 @@ describe("LangflowClient", () => {
         });
 
         const stream = await client.stream({
-          path: "/run/flow-id",
+          path: "/v1/run/flow-id",
           method: "POST",
           headers: new Headers(),
           body: exampleBody,
@@ -456,7 +456,7 @@ describe("LangflowClient", () => {
         });
 
         await client.stream({
-          path: "/run/flow-id",
+          path: "/v1/run/flow-id",
           method: "POST",
           headers: new Headers(),
           body: exampleBody,
@@ -478,7 +478,7 @@ describe("LangflowClient", () => {
 
         try {
           await client.stream({
-            path: "/run/flow-id",
+            path: "/v1/run/flow-id",
             method: "POST",
             headers: new Headers(),
             body: exampleBody,
@@ -503,7 +503,7 @@ describe("LangflowClient", () => {
 
         try {
           await client.stream({
-            path: "/run/flow-id",
+            path: "/v1/run/flow-id",
             method: "POST",
             headers: new Headers(),
             body: exampleBody,
@@ -529,7 +529,7 @@ describe("LangflowClient", () => {
 
         try {
           await client.stream({
-            path: "/run/flow-id",
+            path: "/v1/run/flow-id",
             method: "POST",
             headers: new Headers(),
             body: exampleBody,

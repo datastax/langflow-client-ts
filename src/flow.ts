@@ -69,7 +69,7 @@ export class Flow {
     headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
     const result = (await this.client.request({
-      path: `/run/${this.id}`,
+      path: `/v1/run/${this.id}`,
       method: "POST",
       body,
       headers,
@@ -101,7 +101,7 @@ export class Flow {
     headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
     const streamingResult = await this.client.stream<StreamEvent>({
-      path: `/run/${this.id}`,
+      path: `/v1/run/${this.id}`,
       method: "POST",
       body,
       headers,
@@ -123,7 +123,7 @@ export class Flow {
     headers.set("Accept", "application/json");
 
     const response = (await this.client.request({
-      path: `/files/upload/${this.id}`,
+      path: `/v1/files/upload/${this.id}`,
       method: "POST",
       body: form,
       headers,

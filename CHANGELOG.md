@@ -2,6 +2,16 @@
 
 ## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.1...main)
 
+## 0.3.0 (May 30, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.1...v0.3.0)
+
+### Added
+
+- Fetching and streaming of logs
+
+### Changed
+
+- Base URL no longer includes the API version to allow for using v2 APIs
+
 ## 0.2.1 (March 1, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.0...v0.2.1)
 
 ### Fixed

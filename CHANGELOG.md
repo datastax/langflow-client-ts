@@ -1,6 +1,10 @@
 # Changelog for `@datastax/langflow-client`
 
-## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.1...main)
+## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.3.1...main)
+
+...
+
+## 0.3.1 (June 2, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.3.0...0.3.1)
 
 ### Changed
 

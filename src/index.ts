@@ -34,7 +34,7 @@ export class LangflowClient {
   logs: Logs;
 
   constructor(opts: LangflowClientOptions) {
-    this.baseUrl = opts.baseUrl ?? DATASTAX_LANGFLOW_BASE_URL;
+    this.baseUrl = this.#resolveBaseUrl(opts);
     this.basePath = "/api";
     this.langflowId = opts.langflowId;
     this.apiKey = opts.apiKey;
@@ -61,6 +61,35 @@ export class LangflowClient {
       throw new TypeError("langflowId is not supported");
     }
     this.logs = new Logs(this);
+  }
+
+  #resolveBaseUrl(opts: LangflowClientOptions) {
+    // If baseUrl is provided as an property on the opts, but is it undefined or
+    // null, this is likely not the intention.
+    // Previously the baseUrl would get set to the DATASTAX_LANGFLOW_BASE_URL
+    // and the instantiation would fail due to a missing langflowId. Now it will
+    // throw an more useful error, unless langflowId and apiKey are present.
+    if (Object.hasOwn(opts, "baseUrl")) {
+      const isBaseUrlEffectivelyEmpty =
+        typeof opts.baseUrl === "undefined" ||
+        opts.baseUrl === null ||
+        (typeof opts.baseUrl === "string" && opts.baseUrl.trim() === "");
+
+      if (isBaseUrlEffectivelyEmpty) {
+        // BaseUrl is explicitly provided but is empty/undefined/null.
+        // If langflowId and apiKey are also provided, assume DataStax
+        // connection and use the default DataStax URL.
+        if (opts.langflowId && opts.apiKey) {
+          return DATASTAX_LANGFLOW_BASE_URL;
+        }
+        // Otherwise, this is an invalid configuration.
+        throw new TypeError(
+          `You are trying to set baseUrl, but the value is '${String(opts.baseUrl)}'.`
+        );
+      }
+      // If opts.baseUrl is explicitly set and not effectively empty, it will be used by the return statement below.
+    }
+    return opts.baseUrl ?? DATASTAX_LANGFLOW_BASE_URL;
   }
 
   #isDataStax(): boolean {

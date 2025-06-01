@@ -542,4 +542,53 @@ describe("LangflowClient", () => {
       });
     });
   });
+
+  describe("with a missing baseUrl", () => {
+    const apiKey = "my-api-key";
+    const langflowId = "my-langflow-id";
+
+    [undefined, ""].forEach((baseUrl) => {
+      it(`throws an error baseUrl is set to '${String(baseUrl)}'`, () => {
+        try {
+          new LangflowClient({ baseUrl });
+        } catch (error) {
+          assert.ok(error instanceof TypeError);
+          assert.match(
+            error.message,
+            /You are trying to set baseUrl, but the value is/
+          );
+        }
+      });
+
+      it(`throws an error when baseUrl is set to '${String(baseUrl)}' and only langflowId is provided`, () => {
+        try {
+          new LangflowClient({ baseUrl, langflowId });
+        } catch (error) {
+          assert.ok(error instanceof TypeError);
+          assert.match(
+            error.message,
+            /You are trying to set baseUrl, but the value is/
+          );
+        }
+      });
+
+      it(`throws an error when baseUrl is set to '${String(baseUrl)}' and only apiKey is provided`, () => {
+        try {
+          new LangflowClient({ baseUrl, apiKey });
+        } catch (error) {
+          assert.ok(error instanceof TypeError);
+          assert.match(
+            error.message,
+            /You are trying to set baseUrl, but the value is/
+          );
+        }
+      });
+
+      it(`doesn't throw when baseUrl is set to '${String(baseUrl)}' and langflowId and apiKey are provided`, () => {
+        assert.doesNotThrow(() => {
+          new LangflowClient({ baseUrl, apiKey, langflowId });
+        });
+      });
+    });
+  });
 });

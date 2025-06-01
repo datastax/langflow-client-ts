@@ -2,6 +2,10 @@
 
 ## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.1...main)
 
+### Changed
+
+- When you explicitly try to set the `baseUrl` for a client, but it is undefined, null or empty, it now throws an error with a better explanation.
+
 ## 0.3.0 (May 30, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.2.1...v0.3.0)
 
 ### Added

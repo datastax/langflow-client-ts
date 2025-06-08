@@ -18,10 +18,11 @@ import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
 import { Flow } from "./flow.js";
 import { Logs } from "./logs.js";
+import { Files } from "./files.js";
 import type { LangflowClientOptions, RequestOptions, Tweaks } from "./types.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "./consts.js";
 
-import { platform, arch } from "os";
+import { platform, arch } from "node:os";
 import { NDJSONStream } from "./ndjson.js";
 
 export class LangflowClient {
@@ -32,6 +33,7 @@ export class LangflowClient {
   fetch: typeof fetch;
   defaultHeaders: Headers;
   logs: Logs;
+  files: Files;
 
   constructor(opts: LangflowClientOptions) {
     this.baseUrl = this.#resolveBaseUrl(opts);
@@ -61,6 +63,7 @@ export class LangflowClient {
       throw new TypeError("langflowId is not supported");
     }
     this.logs = new Logs(this);
+    this.files = new Files(this);
   }
 
   #resolveBaseUrl(opts: LangflowClientOptions) {
@@ -149,7 +152,12 @@ export class LangflowClient {
         );
       }
       signal?.throwIfAborted();
-      return await response.json();
+      console.log(headers.get("Accept"));
+      if (headers.get("Accept") === "application/json") {
+        return await response.json();
+      } else {
+        return await response.blob();
+      }
     } catch (error) {
       // If it is a LangflowError or the result of an aborted signal, rethrow it
       if (

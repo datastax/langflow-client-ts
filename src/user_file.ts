@@ -20,6 +20,9 @@ export class UserFile {
   path: string;
   size: number;
   provider?: string;
+  user_id?: string;
+  created_at?: Date;
+  updated_at?: Date;
 
   constructor({
     id,
@@ -27,11 +30,17 @@ export class UserFile {
     path,
     size,
     provider,
+    user_id,
+    created_at,
+    updated_at,
   }: LangflowUploadResponseUserFile) {
     this.id = id;
     this.name = name;
     this.path = path;
     this.size = size;
     this.provider = provider;
+    this.user_id = user_id;
+    this.created_at = created_at ? new Date(created_at) : undefined;
+    this.updated_at = updated_at ? new Date(updated_at) : undefined;
   }
 }

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import mime from "mime";
 import { LangflowClient } from "./index.js";
 import { UserFile } from "./user_file.js";
-import { readFile } from "fs/promises";
-import { basename, extname } from "path";
+import { readFile } from "node:fs/promises";
+import { basename } from "node:path";
 import { LangflowUploadResponseUserFile } from "./types.js";
+import { FormData } from "undici";
 
 export class Files {
   client: LangflowClient;
@@ -27,13 +27,12 @@ export class Files {
   }
 
   async upload(path: string, options: { signal?: AbortSignal } = {}) {
-    const data = await readFile(path);
-    const { signal } = options;
-    const type = mime.getType(extname(path));
-    const file = new File([data], basename(path), type ? { type } : {});
-    console.log(file);
-    const form = new FormData();
-    form.append("file", file);
+    const fileBuffer = await readFile(path);
+    const fileName = basename(path);
+    const file = new File([fileBuffer], fileName);
+
+    const formData = new FormData();
+    formData.append("file", file, fileName);
 
     const headers = new Headers();
     headers.set("Accept", "application/json");
@@ -41,9 +40,9 @@ export class Files {
     const response = (await this.client.request({
       path: `/v2/files`,
       method: "POST",
-      body: form,
+      body: formData,
       headers,
-      signal,
+      signal: options.signal,
     })) as LangflowUploadResponseUserFile;
     return new UserFile(response);
   }
@@ -52,8 +51,21 @@ export class Files {
     const headers = new Headers();
     headers.set("Accept", "application/json");
     const { signal } = options;
-    const response = await this.client.request({
+    const response = (await this.client.request({
       path: `/v2/files`,
+      method: "GET",
+      headers,
+      signal,
+    })) as LangflowUploadResponseUserFile[];
+    return response.map((file) => new UserFile(file));
+  }
+
+  async download(fileId: string, options: { signal?: AbortSignal } = {}) {
+    const headers = new Headers();
+    headers.set("Accept", "application/octet-stream");
+    const { signal } = options;
+    const response = await this.client.request({
+      path: `/v2/files/${fileId}`,
       method: "GET",
       headers,
       signal,

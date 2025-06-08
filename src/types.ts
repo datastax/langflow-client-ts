@@ -41,7 +41,7 @@ export interface RequestOptions {
   method: string;
   query?: Record<string, string>;
   body?: string | FormData;
-  headers: Headers;
+  headers: Headers | any;
   signal?: AbortSignal;
 }
 
@@ -61,10 +61,13 @@ export interface LangflowUploadResponse {
 
 export interface LangflowUploadResponseUserFile {
   id: string;
+  user_id: string;
   name: string;
   path: string;
   size: number;
   provider?: string;
+  updated_at?: string;
+  created_at?: string;
 }
 
 type TokenStreamEvent = {

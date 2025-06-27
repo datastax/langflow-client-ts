@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { fetch, FormData } from "undici";
+import type { fetch, FormData, Headers } from "undici";
 
 import { InputTypes, OutputTypes } from "./consts.js";
 
@@ -41,7 +41,7 @@ export interface RequestOptions {
   method: string;
   query?: Record<string, string>;
   body?: string | FormData;
-  headers: Headers;
+  headers: Headers | Record<string, string>;
   signal?: AbortSignal;
 }
 
@@ -57,6 +57,17 @@ export interface LangflowResponse {
 export interface LangflowUploadResponse {
   flowId: string;
   file_path: string;
+}
+
+export interface LangflowUploadResponseUserFile {
+  id: string;
+  user_id: string;
+  name: string;
+  path: string;
+  size: number;
+  provider?: string;
+  updated_at?: string;
+  created_at?: string;
 }
 
 type TokenStreamEvent = {

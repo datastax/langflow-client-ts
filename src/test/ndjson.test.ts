@@ -15,7 +15,7 @@
 import { NDJSONStream } from "../ndjson.js";
 
 import { describe, it } from "node:test";
-import * as assert from "node:assert";
+import * as assert from "node:assert/strict";
 
 describe("NDJSONStream", () => {
   async function collectStream(readable: ReadableStream) {

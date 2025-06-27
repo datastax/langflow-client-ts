@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { fetch } from "undici";
+import { fetch, Headers } from "undici";
 
 import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
 import { Flow } from "./flow.js";
 import { Logs } from "./logs.js";
+import { Files } from "./files.js";
 import type { LangflowClientOptions, RequestOptions, Tweaks } from "./types.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "./consts.js";
 
-import { platform, arch } from "os";
+import { platform, arch } from "node:os";
 import { NDJSONStream } from "./ndjson.js";
 
 export class LangflowClient {
@@ -32,6 +33,7 @@ export class LangflowClient {
   fetch: typeof fetch;
   defaultHeaders: Headers;
   logs: Logs;
+  files: Files;
 
   constructor(opts: LangflowClientOptions) {
     this.baseUrl = this.#resolveBaseUrl(opts);
@@ -61,6 +63,7 @@ export class LangflowClient {
       throw new TypeError("langflowId is not supported");
     }
     this.logs = new Logs(this);
+    this.files = new Files(this);
   }
 
   #resolveBaseUrl(opts: LangflowClientOptions) {
@@ -108,14 +111,16 @@ export class LangflowClient {
     }
   }
 
-  #setHeaders(headers: Headers) {
+  #setHeaders(headers: Headers | Record<string, string>) {
+    const newHeaders =
+      headers instanceof Headers ? headers : new Headers(headers);
     for (const [header, value] of this.defaultHeaders.entries()) {
-      if (!headers.has(header)) {
-        headers.set(header, value);
+      if (!newHeaders.has(header)) {
+        newHeaders.set(header, value);
       }
     }
     if (this.apiKey) {
-      this.#setApiKey(this.apiKey, headers);
+      this.#setApiKey(this.apiKey, newHeaders);
     }
   }
 

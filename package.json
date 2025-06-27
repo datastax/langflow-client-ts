@@ -55,11 +55,10 @@
     "globals": "^15.14.0",
     "prettier": "^3.4.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.16.0"
   },
   "dependencies": {
-    "mime": "^4.0.6",
     "undici": "^7.2.1"
   },
   "repository": {

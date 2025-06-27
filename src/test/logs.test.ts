@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import * as assert from "node:assert";
+import * as assert from "node:assert/strict";
 import { LangflowClient } from "../index.js";
 import { createMockFetch } from "./utils.js";
 import { LangflowRequestError } from "../errors.js";
@@ -15,7 +15,7 @@ describe("Logs", () => {
         "2025-02-13T12:01:00.000Z": "Second log message",
       };
 
-      const fetcher = createMockFetch(logData, (input, init) => {
+      const fetcher = createMockFetch(logData, async (input, init) => {
         const url = new URL(input.toString());
         assert.equal(url.pathname, "/logs");
         assert.equal(init?.method, "GET");
@@ -40,7 +40,7 @@ describe("Logs", () => {
 
     it("fetches logs with timestamp option", async () => {
       const timestamp = Date.now();
-      const fetcher = createMockFetch({}, (input) => {
+      const fetcher = createMockFetch({}, async (input) => {
         const url = new URL(input.toString());
         assert.equal(url.searchParams.get("timestamp"), timestamp.toString());
       });
@@ -54,7 +54,7 @@ describe("Logs", () => {
     });
 
     it("fetches logs with lines_before option", async () => {
-      const fetcher = createMockFetch({}, (input) => {
+      const fetcher = createMockFetch({}, async (input) => {
         const url = new URL(input.toString());
         assert.equal(url.searchParams.get("lines_before"), "10");
       });
@@ -69,7 +69,7 @@ describe("Logs", () => {
 
     it("fetches logs with lines_after option", async () => {
       const timestamp = Date.now();
-      const fetcher = createMockFetch({}, (input) => {
+      const fetcher = createMockFetch({}, async (input) => {
         const url = new URL(input.toString());
         assert.equal(url.searchParams.get("lines_after"), "5");
         assert.equal(url.searchParams.get("timestamp"), timestamp.toString());
@@ -93,7 +93,7 @@ describe("Logs", () => {
 
       const fetcher = createMockFetch(
         logData,
-        (input, init) => {
+        async (input, init) => {
           const url = new URL(input.toString());
           assert.equal(url.pathname, "/logs-stream");
           assert.equal(init?.method, "GET");
@@ -129,7 +129,7 @@ describe("Logs", () => {
     });
 
     it("handles stream errors", async () => {
-      const fetcher = createMockFetch({}, () => {}, {
+      const fetcher = createMockFetch({}, async () => {}, {
         ok: false,
         status: 500,
         statusText: "Internal Server Error",

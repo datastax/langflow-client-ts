@@ -21,7 +21,7 @@ import { DATASTAX_LANGFLOW_BASE_URL } from "../consts.js";
 import { createMockFetch } from "./utils.js";
 
 import { describe, it } from "node:test";
-import * as assert from "node:assert";
+import * as assert from "node:assert/strict";
 
 describe("LangflowClient", () => {
   describe("with a DataStax API URL", () => {
@@ -79,9 +79,9 @@ describe("LangflowClient", () => {
       it("makes a request to the baseURL with the full path to the method", async () => {
         const fetcher = createMockFetch(
           { session_id: "session-id", outputs: [] },
-          (input, init) => {
+          async (input, init) => {
             assert.equal(
-              input,
+              String(input),
               `${baseUrl}/lf/${langflowId}/api/v1/run/flow-id`
             );
             assert.equal(init?.method, "POST");
@@ -110,7 +110,7 @@ describe("LangflowClient", () => {
       it("includes the API key in the Authorization header", async () => {
         const fetcher = createMockFetch(
           { session_id: "session-id", outputs: [] },
-          (input, init) => {
+          async (input, init) => {
             const headers = new Headers(init?.headers);
             assert.equal(headers.get("Authorization"), `Bearer ${apiKey}`);
           }
@@ -137,7 +137,7 @@ describe("LangflowClient", () => {
       it("includes a user agent in the headers", async () => {
         const fetcher = createMockFetch(
           { session_id: "session-id", outputs: [] },
-          (input, init) => {
+          async (input, init) => {
             const headers = new Headers(init?.headers);
             const userAgent = headers.get("User-Agent");
             assert.ok(userAgent);
@@ -168,7 +168,7 @@ describe("LangflowClient", () => {
 
       it("throws a LangflowError if the response is not ok", async () => {
         const response = { details: "blah" };
-        const fetcher = createMockFetch(response, () => {}, {
+        const fetcher = createMockFetch(response, async () => {}, {
           ok: false,
           status: 401,
           statusText: "Unauthorized",
@@ -200,7 +200,7 @@ describe("LangflowClient", () => {
       });
 
       it("throws a LangflowRequestError if the request fails", async () => {
-        const fetcher = createMockFetch({ details: "blah" }, () => {}, {
+        const fetcher = createMockFetch({ details: "blah" }, async () => {}, {
           ok: false,
           status: 500,
           statusText: "Internal Server Error",
@@ -293,8 +293,8 @@ describe("LangflowClient", () => {
       it("makes a request to the baseURL with the full path to the method", async () => {
         const fetcher = createMockFetch(
           { session_id: "session-id", outputs: [] },
-          (input, init) => {
-            assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
+          async (input, init) => {
+            assert.equal(String(input), `${baseUrl}/api/v1/run/flow-id`);
             assert.equal(init?.method, "POST");
           }
         );
@@ -319,7 +319,7 @@ describe("LangflowClient", () => {
       it("includes the API key in the Authorization header", async () => {
         const fetcher = createMockFetch(
           { session_id: "session-id", outputs: [] },
-          (input, init) => {
+          async (input, init) => {
             const headers = new Headers(init?.headers);
             assert.equal(headers.get("x-api-key"), apiKey);
           }
@@ -344,7 +344,7 @@ describe("LangflowClient", () => {
 
       it("throws a LangflowError if the response is not ok", async () => {
         const response = { details: "blah" };
-        const fetcher = createMockFetch(response, () => {}, {
+        const fetcher = createMockFetch(response, async () => {}, {
           ok: false,
           status: 401,
           statusText: "Unauthorized",
@@ -399,7 +399,7 @@ describe("LangflowClient", () => {
         ];
         const fetcher = createMockFetch(
           events,
-          (input, init) => {
+          async (input, init) => {
             const url = new URL(input);
             assert.equal(url.searchParams.get("stream"), "true");
             assert.equal(url.pathname, "/api/v1/run/flow-id");
@@ -435,7 +435,7 @@ describe("LangflowClient", () => {
       it("includes the API key in x-api-key header for streams", async () => {
         const fetcher = createMockFetch(
           {},
-          (input, init) => {
+          async (input, init) => {
             const headers = new Headers(init?.headers);
             assert.equal(headers.get("x-api-key"), apiKey);
           },
@@ -492,7 +492,7 @@ describe("LangflowClient", () => {
       });
 
       it("throws LangflowError if stream response has no body", async () => {
-        const fetcher = createMockFetch({}, () => {}, {
+        const fetcher = createMockFetch({}, async () => {}, {
           ok: true,
         });
 
@@ -516,7 +516,7 @@ describe("LangflowClient", () => {
       });
 
       it("throws LangflowError if stream response is not ok", async () => {
-        const fetcher = createMockFetch({}, () => {}, {
+        const fetcher = createMockFetch({}, async () => {}, {
           ok: false,
           status: 401,
           statusText: "Unauthorized",

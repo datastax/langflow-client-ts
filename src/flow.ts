@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import mime from "mime";
-import { FormData } from "undici";
+import { FormData, Headers } from "undici";
 
 import { LangflowClient } from "./index.js";
 import { FlowResponse } from "./flow_response.js";
@@ -26,9 +25,6 @@ import {
   LangflowUploadResponse,
   StreamEvent,
 } from "./types.js";
-
-import { readFile } from "node:fs/promises";
-import { extname, basename } from "node:path";
 
 export class Flow {
   client: LangflowClient;
@@ -110,11 +106,8 @@ export class Flow {
     return streamingResult;
   }
 
-  async uploadFile(path: string, options: { signal?: AbortSignal } = {}) {
-    const data = await readFile(path);
+  async uploadFile(file: File | Blob, options: { signal?: AbortSignal } = {}) {
     const { signal } = options;
-    const type = mime.getType(extname(path));
-    const file = new File([data], basename(path), type ? { type } : {});
 
     const form = new FormData();
     form.append("file", file);

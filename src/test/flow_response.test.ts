@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import * as assert from "node:assert";
+import * as assert from "node:assert/strict";
 import { join } from "node:path";
 import { readFile } from "node:fs/promises";
 import { FlowResponse } from "../flow_response.js";

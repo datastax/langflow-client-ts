@@ -1,10 +1,19 @@
 # Changelog for `@datastax/langflow-client`
 
-## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.3.1...main)
+## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.4.0...main)
 
-...
+## 0.4.0 (June 27, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.3.1...v0.4.0)
 
-## 0.3.1 (June 2, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.3.0...0.3.1)
+### Added
+
+- The upload and list methods of the v2 File Upload API
+
+### Changed
+
+- The v1 File Upload method now takes a File or Blob instead of a file path
+- Tests all use strict assertions now
+
+## 0.3.1 (June 2, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.3.0...v0.3.1)
 
 ### Changed
 

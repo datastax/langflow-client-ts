@@ -114,9 +114,10 @@ describe("Flow", () => {
         }
       );
 
-      const file = await readFile(
+      const buffer = await readFile(
         join(import.meta.dirname, "fixtures", "bodi.jpg")
       );
+      const file = new File([buffer], "bodi.jpg", { type: "image/jpeg" });
 
       const client = new LangflowClient({
         baseUrl: "http://localhost:7860",

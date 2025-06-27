@@ -17,7 +17,7 @@ import * as assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { LangflowClient } from "../index.js";
 import { createMockFetch, assertBlobEqual } from "./utils.js";
-import { Headers } from "undici";
+import { Headers, FormData } from "undici";
 import { UserFile } from "../user_file.js";
 
 const baseUrl = "http://localhost:3000";

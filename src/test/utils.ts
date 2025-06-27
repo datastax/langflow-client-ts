@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { type Response, Request, RequestInit } from "undici";
-import { AssertionError } from "node:assert/strict";
+import { AssertionError } from "node:assert";
 
 type RequestInfo = string | URL | Request;
 

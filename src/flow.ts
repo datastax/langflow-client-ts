@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { FormData } from "undici";
+import { FormData, Headers } from "undici";
 
 import { LangflowClient } from "./index.js";
 import { FlowResponse } from "./flow_response.js";

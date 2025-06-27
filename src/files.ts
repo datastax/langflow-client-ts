@@ -15,7 +15,7 @@
 import { LangflowClient } from "./index.js";
 import { UserFile } from "./user_file.js";
 import { LangflowUploadResponseUserFile } from "./types.js";
-import { FormData } from "undici";
+import { FormData, Headers } from "undici";
 
 export class Files {
   client: LangflowClient;
@@ -46,7 +46,7 @@ export class Files {
     headers.set("Accept", "application/json");
     const { signal } = options;
     const response = (await this.client.request({
-      path: `/v2/files`,
+      path: "/v2/files",
       method: "GET",
       headers,
       signal,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { fetch } from "undici";
+import { fetch, Headers } from "undici";
 
 import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
@@ -111,14 +111,16 @@ export class LangflowClient {
     }
   }
 
-  #setHeaders(headers: Headers) {
+  #setHeaders(headers: Headers | Record<string, string>) {
+    const newHeaders =
+      headers instanceof Headers ? headers : new Headers(headers);
     for (const [header, value] of this.defaultHeaders.entries()) {
-      if (!headers.has(header)) {
-        headers.set(header, value);
+      if (!newHeaders.has(header)) {
+        newHeaders.set(header, value);
       }
     }
     if (this.apiKey) {
-      this.#setApiKey(this.apiKey, headers);
+      this.#setApiKey(this.apiKey, newHeaders);
     }
   }
 

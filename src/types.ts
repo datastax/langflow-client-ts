@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { fetch, FormData } from "undici";
+import type { fetch, FormData, Headers } from "undici";
 
 import { InputTypes, OutputTypes } from "./consts.js";
 

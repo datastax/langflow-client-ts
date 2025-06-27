@@ -41,7 +41,7 @@ export interface RequestOptions {
   method: string;
   query?: Record<string, string>;
   body?: string | FormData;
-  headers: Headers | any;
+  headers: Headers | Record<string, string>;
   signal?: AbortSignal;
 }
 

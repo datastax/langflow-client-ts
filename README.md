@@ -20,6 +20,8 @@ This package provides an easy way to use the [Langflow API](https://docs.datasta
     - [Flow reponses](#flow-reponses)
   - [Streaming](#streaming)
   - [File upload](#file-upload)
+    - [Images](#images)
+    - [File uploads](#file-uploads)
   - [Logs](#logs)
     - [Fetching the logs](#fetching-the-logs)
     - [Streaming the logs](#streaming-the-logs)
@@ -196,22 +198,67 @@ There's more [documentation and examples of a streaming response in the Langflow
 
 ### File upload
 
-[Langflow documentation for file upload API](https://docs.langflow.org/api/upload-file-1).
+#### Images
+
+The [Langflow v1 file upload API](https://docs.langflow.org/api-files#filesv1-endpoints) supports uploading image files to a flow, that can then be used in that flow.
 
 Chat input components support files as input as well as text. You need to upload your file first, using the file upload function, then provide the file path to the flow as a tweak.
 
 ```js
-const flow = client.flow(flowId)
+const buffer = await readFile(path);
+const file = new File([buffer], "image.jpg", { type: "image/jpeg" });
 
-const file = await flow.uploadFile(pathToFile);
+const flow = client.flow(flowId)
+const file = await flow.uploadFile(file);
 console.log(file);
 // => { flowId: "XXX", filePath: "YYY" }
 
-const response = await flow.tweak("ChatInput-abcd": { files: file.filePath }).run("What can you see in this image?");
+const response = await flow
+  .tweak("ChatInput-abcd": { files: file.filePath })
+  .run("What can you see in this image?");
 ```
 
 > [!WARNING]  
 > DataStax Langflow doesn't make file upload available, you will receive a 501 Not Implemented error.
+
+#### File uploads
+
+The [Langflow v2 file upload API](https://docs.langflow.org/api-files#filesv2-endpoints) supports uploading files to a user. These can then be used with the [File component](https://docs.langflow.org/components-data#file).
+
+> [!WARNING]
+> The v2 file upload and the File component don't support image uploads. For images you should use the [v1 file upload API](#images).
+
+You can upload files like this:
+
+```js
+const buffer = await readFile(path);
+const file = new File([buffer], "document.pdf", { type: "application/pdf" });
+
+const fileUpload = await client.files.upload(file);
+console.log(file);
+// => { path: "abc123/document.pdf", name: "document", ... }
+```
+
+You can then send them to the file component in a flow using a tweak.
+
+```js
+const flow = client.flow(flowId);
+flow.tweak("File-abc123", {
+  path: fileUpload.path,
+});
+```
+
+You can also list your uploaded files with the `files.list()` function:
+
+```js
+const files = await client.files.list();
+
+console.log(files);
+// [{ path: "...", }, ...]
+```
+
+> [!NOTE]
+> TODO: other file methods available through the API: download, edit, delete, and delete all
 
 ### Logs
 

@@ -14,8 +14,6 @@
 
 import { LangflowClient } from "./index.js";
 import { UserFile } from "./user_file.js";
-import { readFile } from "node:fs/promises";
-import { basename } from "node:path";
 import { LangflowUploadResponseUserFile } from "./types.js";
 import { FormData } from "undici";
 
@@ -26,19 +24,15 @@ export class Files {
     this.client = client;
   }
 
-  async upload(path: string, options: { signal?: AbortSignal } = {}) {
-    const fileBuffer = await readFile(path);
-    const fileName = basename(path);
-    const file = new File([fileBuffer], fileName);
-
+  async upload(file: File | Blob, options: { signal?: AbortSignal } = {}) {
     const formData = new FormData();
-    formData.append("file", file, fileName);
+    formData.append("file", file);
 
     const headers = new Headers();
     headers.set("Accept", "application/json");
 
     const response = (await this.client.request({
-      path: `/v2/files`,
+      path: "/v2/files",
       method: "POST",
       body: formData,
       headers,
@@ -58,18 +52,5 @@ export class Files {
       signal,
     })) as LangflowUploadResponseUserFile[];
     return response.map((file) => new UserFile(file));
-  }
-
-  async download(fileId: string, options: { signal?: AbortSignal } = {}) {
-    const headers = new Headers();
-    headers.set("Accept", "application/octet-stream");
-    const { signal } = options;
-    const response = await this.client.request({
-      path: `/v2/files/${fileId}`,
-      method: "GET",
-      headers,
-      signal,
-    });
-    return response;
   }
 }

@@ -152,12 +152,7 @@ export class LangflowClient {
         );
       }
       signal?.throwIfAborted();
-      console.log(headers.get("Accept"));
-      if (headers.get("Accept") === "application/json") {
-        return await response.json();
-      } else {
-        return await response.blob();
-      }
+      return await response.json();
     } catch (error) {
       // If it is a LangflowError or the result of an aborted signal, rethrow it
       if (

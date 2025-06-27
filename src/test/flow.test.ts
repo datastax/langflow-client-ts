@@ -21,8 +21,9 @@ import { FlowResponse } from "../flow_response.js";
 import { UploadResponse } from "../upload_response.js";
 
 import { describe, it } from "node:test";
-import * as assert from "node:assert";
+import * as assert from "node:assert/strict";
 import { join } from "node:path";
+import { readFile } from "node:fs/promises";
 
 describe("Flow", () => {
   const baseUrl = "http://localhost:7860";
@@ -58,8 +59,8 @@ describe("Flow", () => {
     it("sends a request to the server at the run endpoint providing options", async () => {
       const fetcher = createMockFetch(
         { session_id: "session-id", outputs: [] },
-        (input, init) => {
-          assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
+        async (input, init) => {
+          assert.equal(String(input), `${baseUrl}/api/v1/run/flow-id`);
           assert.equal(init?.method, "POST");
         }
       );
@@ -77,8 +78,8 @@ describe("Flow", () => {
     it("sends a request to the server at the run endpoint providing options", async () => {
       const fetcher = createMockFetch(
         { session_id: "session-id", outputs: [] },
-        (input, init) => {
-          assert.equal(input, `${baseUrl}/api/v1/run/flow-id`);
+        async (input, init) => {
+          assert.equal(String(input), `${baseUrl}/api/v1/run/flow-id`);
           assert.equal(init?.method, "POST");
           assert.match(String(init?.body), /"input_type":"chat"/);
         }
@@ -102,22 +103,28 @@ describe("Flow", () => {
     it("reads the file and sends it to the server", async () => {
       const fetcher = createMockFetch(
         { flowId, file_path: "folder/date-filename.jpg" },
-        (input, init) => {
-          assert.equal(input, `${baseUrl}/api/v1/files/upload/${flowId}`);
+        async (input, init) => {
+          assert.equal(
+            String(input),
+            `${baseUrl}/api/v1/files/upload/${flowId}`
+          );
           assert.equal(init?.method, "POST");
           assert.ok(init?.body instanceof FormData);
           assert.ok(init?.body.has("file"));
         }
       );
+
+      const file = await readFile(
+        join(import.meta.dirname, "fixtures", "bodi.jpg")
+      );
+
       const client = new LangflowClient({
         baseUrl: "http://localhost:7860",
         fetch: fetcher,
       });
       const flow = new Flow(client, flowId);
 
-      const result = await flow.uploadFile(
-        join(import.meta.dirname, "fixtures", "bodi.jpg")
-      );
+      const result = await flow.uploadFile(file);
       assert.ok(result instanceof UploadResponse);
       assert.equal(result.flowId, flowId);
     });

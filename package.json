@@ -59,7 +59,6 @@
     "typescript-eslint": "^8.16.0"
   },
   "dependencies": {
-    "mime": "^4.0.6",
     "undici": "^7.2.1"
   },
   "repository": {

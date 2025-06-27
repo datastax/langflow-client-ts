@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import { type Response, Request, RequestInit } from "undici";
+import { AssertionError } from "node:assert/strict";
 
 type RequestInfo = string | URL | Request;
 
 export function createMockFetch<T>(
   response: T,
-  spiesOn: (input: RequestInfo, init?: RequestInit) => void,
+  spiesOn: (input: RequestInfo, init?: RequestInit) => Promise<void>,
   options?: {
     ok?: boolean;
     status?: number;
@@ -26,8 +27,11 @@ export function createMockFetch<T>(
     body?: ReadableStream;
   }
 ): (input: RequestInfo, init?: RequestInit) => Promise<Response> {
-  return function (input: RequestInfo, init?: RequestInit): Promise<Response> {
-    spiesOn(input, init);
+  return async function (
+    input: RequestInfo,
+    init?: RequestInit
+  ): Promise<Response> {
+    await spiesOn(input, init);
     if (options?.status && options.status >= 500) {
       return Promise.reject(
         new TypeError(options?.statusText ?? "Internal Server Error")
@@ -42,4 +46,38 @@ export function createMockFetch<T>(
       text: async () => JSON.stringify(response),
     } as Response);
   };
+}
+
+export async function assertBlobEqual(actual: Blob, expected: Blob) {
+  const arrayBufferActual = await actual.arrayBuffer();
+  const arrayBufferExpected = await expected.arrayBuffer();
+  if (arrayBufferActual.byteLength !== arrayBufferExpected.byteLength) {
+    throw new AssertionError({
+      message: "Files are different sizes",
+      actual,
+      expected,
+    });
+  }
+
+  const uint8ArrayActual = new Uint8Array(arrayBufferActual);
+  const uint8ArrayExpected = new Uint8Array(arrayBufferExpected);
+
+  let result = true;
+
+  for (let i = 0; i < uint8ArrayActual.length; i++) {
+    if (uint8ArrayActual[i] !== uint8ArrayExpected[i]) {
+      result = false;
+      break;
+    }
+  }
+
+  if (result) {
+    return true;
+  } else {
+    throw new AssertionError({
+      message: "Files are the same size but the contents are different",
+      actual,
+      expected,
+    });
+  }
 }

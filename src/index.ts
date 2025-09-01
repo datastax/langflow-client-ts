@@ -12,18 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { fetch, Headers } from "undici";
+import { fetch, Headers, type FormData } from "undici";
 
 import pkg from "../package.json" with { type: "json" };
 import { LangflowError, LangflowRequestError } from "./errors.js";
-import { Flow } from "./flow.js";
+import { Flow, type Tweaks } from "./flow.js";
 import { Logs } from "./logs.js";
 import { Files } from "./files.js";
-import type { LangflowClientOptions, RequestOptions, Tweaks } from "./types.js";
 import { DATASTAX_LANGFLOW_BASE_URL } from "./consts.js";
 
 import { platform, arch } from "node:os";
 import { NDJSONStream } from "./ndjson.js";
+
+export interface LangflowClientOptions {
+  baseUrl?: string;
+  langflowId?: string;
+  apiKey?: string;
+  fetch?: typeof fetch;
+  defaultHeaders?: Headers;
+}
+
+export interface RequestOptions {
+  path: string;
+  method: string;
+  query?: Record<string, string>;
+  body?: string | FormData;
+  headers: Headers | Record<string, string>;
+  signal?: AbortSignal;
+}
 
 export class LangflowClient {
   baseUrl: string;

@@ -22,3 +22,6 @@ const DEBUG = "debug";
 
 export const InputTypes = Object.freeze({ CHAT, TEXT, ANY });
 export const OutputTypes = Object.freeze({ CHAT, TEXT, ANY, DEBUG });
+
+export type FlowInputType = (typeof InputTypes)[keyof typeof InputTypes];
+export type FlowOutputType = (typeof OutputTypes)[keyof typeof OutputTypes];

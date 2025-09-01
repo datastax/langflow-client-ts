@@ -17,14 +17,9 @@ import { FormData, Headers } from "undici";
 import { LangflowClient } from "./index.js";
 import { FlowResponse } from "./flow_response.js";
 import { UploadResponse } from "./upload_response.js";
-import {
-  Tweaks,
-  Tweak,
-  FlowRequestOptions,
-  LangflowResponse,
-  LangflowUploadResponse,
-  StreamEvent,
-} from "./types.js";
+import type { FlowInputType, FlowOutputType } from "./consts.js";
+import type { LangflowResponse } from "./flow_response.js";
+import type { LangflowUploadResponse } from "./upload_response.js";
 
 export class Flow {
   client: LangflowClient;
@@ -125,3 +120,80 @@ export class Flow {
     return new UploadResponse(response);
   }
 }
+
+export interface FlowRequestOptions {
+  input_type: FlowInputType;
+  output_type: FlowOutputType;
+  input_value: string;
+  tweaks?: Tweaks;
+  session_id?: string;
+  signal?: AbortSignal;
+}
+
+export type Tweak = Record<string, string | number | null | boolean>;
+export type Tweaks = Record<string, Tweak | string>;
+
+export type TokenStreamEvent = {
+  event: "token";
+  data: TokenStreamEventData;
+};
+
+export type TokenStreamEventData = {
+  chunk: string;
+  id: string;
+  timestamp: string;
+};
+
+export type AddMessageStreamEvent = {
+  event: "add_message";
+  data: MessageStreamEventData;
+};
+
+export interface MessageStreamEventData {
+  timestamp: string;
+  sender: string;
+  sender_name: string;
+  session_id: string;
+  text: string;
+  files: unknown[];
+  error: boolean;
+  edit: boolean;
+  properties: MessageStreamEventDataProperties;
+  category: string;
+  content_blocks: unknown[];
+  id: string;
+  flow_id: string;
+  duration: unknown;
+}
+
+export interface MessageStreamEventDataProperties {
+  text_color: string;
+  background_color: string;
+  edited: boolean;
+  source: MessageStreamEventDataSource;
+  icon: string;
+  allow_markdown: boolean;
+  positive_feedback: unknown;
+  state: string;
+  targets: unknown[];
+}
+
+export interface MessageStreamEventDataSource {
+  id: unknown;
+  display_name: unknown;
+  source: unknown;
+}
+
+export type EndStreamEvent = {
+  event: "end";
+  data: EndStreamEventData;
+};
+
+export type EndStreamEventData = {
+  result: LangflowResponse;
+};
+
+export type StreamEvent =
+  | TokenStreamEvent
+  | AddMessageStreamEvent
+  | EndStreamEvent;

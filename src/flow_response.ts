@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { LangflowResponse } from "./types.js";
+export interface LangflowResponse {
+  session_id: string;
+  outputs: Array<{ inputs: object; outputs: Array<object> }>;
+}
 
 export class FlowResponse {
   sessionId: string;

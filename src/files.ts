@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { LangflowClient } from "./index.js";
-import { UserFile } from "./user_file.js";
-import { LangflowUploadResponseUserFile } from "./types.js";
+import { UserFile, type LangflowUploadResponseUserFile } from "./user_file.js";
 import { FormData, Headers } from "undici";
 
 export class Files {

@@ -12,7 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { LangflowUploadResponseUserFile } from "./types.js";
+export interface LangflowUploadResponseUserFile {
+  id: string;
+  user_id: string;
+  name: string;
+  path: string;
+  size: number;
+  provider?: string;
+  updated_at?: string;
+  created_at?: string;
+}
 
 export class UserFile {
   id: string;

@@ -81,7 +81,7 @@ type TokenStreamEvent = {
 
 type AddMessageStreamEvent = {
   event: "add_message";
-  data: unknown;
+  data: MessageStreamEventData;
 };
 
 type EndStreamEvent = {
@@ -93,6 +93,41 @@ type EndStreamEvent = {
     };
   };
 };
+
+export interface MessageStreamEventData {
+  timestamp: string;
+  sender: string;
+  sender_name: string;
+  session_id: string;
+  text: string;
+  files: unknown[];
+  error: boolean;
+  edit: boolean;
+  properties: MessageStreamEventDataProperties;
+  category: string;
+  content_blocks: unknown[];
+  id: string;
+  flow_id: string;
+  duration: unknown;
+}
+
+export interface MessageStreamEventDataProperties {
+  text_color: string;
+  background_color: string;
+  edited: boolean;
+  source: MessageStreamEventDataSource;
+  icon: string;
+  allow_markdown: boolean;
+  positive_feedback: unknown;
+  state: string;
+  targets: unknown[];
+}
+
+export interface MessageStreamEventDataSource {
+  id: unknown;
+  display_name: unknown;
+  source: unknown;
+}
 
 export type StreamEvent =
   | TokenStreamEvent

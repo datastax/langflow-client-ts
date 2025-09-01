@@ -1,6 +1,15 @@
 # Changelog for `@datastax/langflow-client`
 
-## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.4.0...main)
+## Ongoing [☰](https://github.com/datastax/langflow-client-ts/compare/v0.4.1...main)
+
+...
+
+## 0.4.1 (September 1, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.4.0...v0.4.1)
+
+### Changed
+
+- Removed junk draw directory for types and moved types to where they are used
+- Exports all types so that they can be used in apps that use the library
 
 ## 0.4.0 (June 27, 2025) [☰](https://github.com/datastax/langflow-client-ts/compare/v0.3.1...v0.4.0)
 
